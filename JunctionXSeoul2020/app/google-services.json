@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "1092485655583",
+    "firebase_url": "https://junctionxseoul2020.firebaseio.com",
+    "project_id": "junctionxseoul2020",
+    "storage_bucket": "junctionxseoul2020.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1092485655583:android:506ed2cd6eb20bba7c392a",
+        "android_client_info": {
+          "package_name": "com.example.junctionxseoul2020"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1092485655583-9qv8huotrc9r7e85glhju160rbk15n1e.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.junctionxseoul2020",
+            "certificate_hash": "77e874c24e008962c417cf91e0f9b58967bd2c37"
+          }
+        },
+        {
+          "client_id": "1092485655583-i747tn1umj877fuqk8fflgnkjckc5anj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD7JK2N27tmtJ1U-2xk7Z8g3BLECKoL7zg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1092485655583-i747tn1umj877fuqk8fflgnkjckc5anj.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
