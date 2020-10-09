@@ -12,17 +12,19 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
         <activity android:name=".LoginActivity"></activity>
-        <activity android:name=".TempActivity"/>
-        <activity android:name=".temp_hashCode"/>
-        <activity android:name=".temp_realtimedb"/>
-        <activity android:name=".temp_firebase"/>
-         
-        <activity android:name=".MainActivity">
+        <activity android:name=".TempActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+        </activity>
+        <activity android:name=".temp_hashCode"/>
+        <activity android:name=".temp_realtimedb"/>
+        <activity android:name=".temp_firebase"/>
+         
+        <activity android:name=".MainActivity">
         </activity>
     </application>
 

@@ -1,9 +1,18 @@
 package com.example.junctionxseoul2020
 
 import android.annotation.SuppressLint
+import android.content.ContentValues
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Environment
+import android.os.Handler
+import android.provider.MediaStore
+
 import android.util.Log
+import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.example.junctionxseoul2020.apiService.RetrofitService
 import com.example.junctionxseoul2020.data.ZepetoRequest
@@ -17,16 +26,56 @@ import org.json.JSONObject
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
+import java.io.*
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
 class TempActivity : AppCompatActivity() {
 
+    lateinit var photoBoothList: ArrayList<String>
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_temp)
         init()
     }
 
+    fun readFile(){
+        photoBoothList = ArrayList()
+//        Thread(Runnable {
+//
+//            var inputStream = resources.openRawResource(R.raw.data);
+//            var scan = Scanner(inputStream)
+//            try {
+//                while (scan.hasNext()) {
+//                    var line = scan.nextLine()
+//                    photoBoothList.add(line)
+////                    Log.d("PHOTO_BOOTH", line)
+//                }
+//            } catch (e:IOException) {
+//                e.printStackTrace()
+//            }
+//            scan.close()
+//        }).start()
+
+
+        var inputStream = resources.openRawResource(R.raw.data);
+        var scan = Scanner(inputStream)
+        try {
+            while (scan.hasNext()) {
+                var line = scan.nextLine()
+                photoBoothList.add(line)
+//                    Log.d("PHOTO_BOOTH", line)
+            }
+        } catch (e:IOException) {
+            e.printStackTrace()
+        }
+        scan.close()
+
+    }
     fun init(){
+        readFile()
+
         retrofit = Retrofit.Builder()
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .addConverterFactory(GsonConverterFactory.create())
@@ -35,11 +84,71 @@ class TempActivity : AppCompatActivity() {
             .build()
             .create(RetrofitService::class.java)
         ZepetoAPI()
+
+        view_capture.setOnClickListener {
+            captureView()
+        }
     }
+    fun captureView(){
+
+        var bitmap = Bitmap.createBitmap(image_view.width, image_view.height, Bitmap.Config.ARGB_8888)
+        var canvas = Canvas(bitmap)
+        image_view.draw(canvas)
+        var date = SimpleDateFormat("yyyyMMddHHmmss").format(Date())
+        var filename = "tempImage${date}.jpg"
+        image_view2.setImageBitmap(bitmap)
+
+//
+//        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q){
+//            var values = ContentValues().apply{
+//                put(MediaStore.Images.Media.DISPLAY_NAME, filename)
+//                put(MediaStore.Images.Media.MIME_TYPE, "image/jpg")
+//                put(MediaStore.Images.Media.IS_PENDING, 1)
+//            }
+//            var collection = MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
+//            var item = this.contentResolver.insert(collection, values)!!
+//            this.contentResolver.openAssetFileDescriptor(item, "w", null).use {
+//                var out = FileOutputStream(it!!.fileDescriptor)
+//                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out)
+//                out.close()
+//            }
+//            values.clear()
+//            values.put(MediaStore.Images.Media.IS_PENDING, 0)
+//            this.contentResolver.update(item, values, null, null)
+//
+//            Toast.makeText(this, "Screen Capture", Toast.LENGTH_SHORT).show()
+//        } else {
+//            val dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).toString() +
+//                    File.separator +
+//                    "junctionX"
+//            val file = File(dir)
+//            if (!file.exists()) {
+//                file.mkdirs()
+//            }
+//
+//            val imgFile = File(file, filename)
+//            val os = FileOutputStream(imgFile)
+//            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, os)
+//            os.flush()
+//            os.close()
+//            val values = ContentValues()
+//            with(values) {
+//                put(MediaStore.Images.Media.TITLE, filename)
+//                put(MediaStore.Images.Media.DATA, imgFile.absolutePath)
+//                put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
+//            }
+//            this.contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
+//            Toast.makeText(this, "Screen Capture", Toast.LENGTH_SHORT).show()
+//
+//        }
+    }
+
     lateinit var retrofit:RetrofitService
     @SuppressLint("CheckResult")
     fun ZepetoAPI(){
-        var photobooth_id = "VIDEOBOOTH_451"
+//        photoBoothList.shuffle()
+
+        var photobooth_id = photoBoothList.random()
         var body = ZepetoRequest("booth",
             800,
             ZepetoRequest.hashCodes(arrayListOf("K4R33L"))
