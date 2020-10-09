@@ -11,7 +11,6 @@ import com.example.junctionxseoul2020.data.UserManager
 
 class MainActivity : AppCompatActivity() {
 
-    lateinit var uID: String
     lateinit var postManager: PostManager
     lateinit var userManager: UserManager
 
@@ -19,7 +18,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val loginIntent: Intent = Intent(this, LoginActivity::class.java)
+        val loginIntent = Intent(this, LoginActivity::class.java)
         startActivityForResult(loginIntent, 1)
     }
 
@@ -30,9 +29,8 @@ class MainActivity : AppCompatActivity() {
         로그인 액티비티가 종료된 경우
         */
         if (requestCode == 1) {
-            uID = data?.getStringExtra("uID")!!
             postManager = data?.getSerializableExtra("postManager") as PostManager
-            userManager = data?.getSerializableExtra("userManager") as UserManager
+            userManager = data.getSerializableExtra("userManager") as UserManager
         }
     }
 

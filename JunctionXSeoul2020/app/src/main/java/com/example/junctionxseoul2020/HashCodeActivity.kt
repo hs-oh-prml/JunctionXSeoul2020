@@ -1,6 +1,5 @@
 package com.example.junctionxseoul2020
 
-import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
@@ -8,12 +7,12 @@ import android.text.TextWatcher
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
-import kotlinx.android.synthetic.main.activity_temp_hash_code.*
+import kotlinx.android.synthetic.main.activity_hash_code.*
 
-class temp_hashCode : AppCompatActivity() {
+class HashCodeActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_temp_hash_code)
+        setContentView(R.layout.activity_hash_code)
         init()
     }
 
@@ -35,8 +34,9 @@ class temp_hashCode : AppCompatActivity() {
         btn_start.setOnClickListener {
             val name = et_hashCode.text.toString().trim()
             if(initUserInfo(name)) {
-                val intent = Intent(this, temp_realtimedb::class.java)
-                startActivity(intent)
+//
+//                val intent = Intent(this, temp_realtimedb::class.java)
+//                startActivity(intent)
                 finish()
             } else {
                 Toast.makeText(this, "계정 등록 오류", Toast.LENGTH_SHORT).show()
