@@ -9,8 +9,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.example.junctionxseoul2020.data.Post
 import com.example.junctionxseoul2020.data.PostManager
-import com.example.junctionxseoul2020.data.UserManager
 import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.gson.Gson
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.*
 import com.naver.maps.map.overlay.Marker
@@ -21,7 +21,6 @@ import java.util.*
 class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
     lateinit var postManager: PostManager
-    lateinit var userManager: UserManager
     var lat = 0.0
     var lng = 0.0
     lateinit var locationSource: FusedLocationSource
@@ -33,6 +32,10 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        init()
+    }
+
+    private fun init(){
         NaverMapSdk.getInstance(this).client = NaverMapSdk.NaverCloudPlatformClient("4fdqbc9gq2")
         locationSource = FusedLocationSource(this, 0)
 
@@ -57,8 +60,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
         val loginIntent = Intent(this, LoginActivity::class.java)
         startActivityForResult(loginIntent, 1)
-
-
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -68,13 +69,18 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         로그인 액티비티가 종료된 경우
         */
         if (requestCode == 1) {
-            postManager = data?.getSerializableExtra("postManager") as PostManager
-            userManager = data.getSerializableExtra("userManager") as UserManager
+            if(data!=null){
+                val vec = data.getStringArrayListExtra("postManager")
+                val gson = Gson()
+                for (i in vec) {
+                    postManager.posts.add(gson.fromJson(i, Post::class.java))
+                }
+            }
         }
         /*
         게시글 작성 액티비티가 종료된 경우
         */
-        else if (requestCode == 11) {
+        else if(requestCode == 11) {
 
         }
     }
@@ -106,7 +112,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         디버깅 용도로 임시로 만든 코드임
         */
         // 시작
-        val temp_vector: Vector<String> = Vector<String>()
+        val temp_vector: ArrayList<String> = ArrayList()
         temp_vector.add("1")
         temp_vector.add("2")
         temp_vector.add("3")
@@ -118,7 +124,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         postManager.posts.add(
             Post(
                 "1",
-                1,
+                "1",
                 "1",
                 "first post",
                 "2020.10.10 12:13",
@@ -130,37 +136,37 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         postManager.posts.add(
             Post(
                 "2",
-                2,
+                "2",
                 "2",
                 "second post",
                 "2020.10.10 12:13",
                 37.541953,
                 127.079621,
-                Vector<String>()
+                ArrayList<String>()
             )
         )
         postManager.posts.add(
             Post(
                 "3",
-                3,
+                "3",
                 "3",
                 "third post",
                 "2020.10.10 12:13",
                 37.542433,
                 127.078807,
-                Vector<String>()
+                ArrayList<String>()
             )
         )
         postManager.posts.add(
             Post(
                 "4",
-                4,
+                "4",
                 "4",
                 "fourth post",
                 "2020.10.10 12:13",
                 37.544261,
                 127.076116,
-                Vector<String>()
+                ArrayList<String>()
             )
         )
         // 종료

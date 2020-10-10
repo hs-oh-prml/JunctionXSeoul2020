@@ -8,7 +8,6 @@ import android.os.Handler
 import android.os.Message
 import android.util.Log
 import com.example.junctionxseoul2020.data.PostManager
-import com.example.junctionxseoul2020.data.UserManager
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -26,11 +25,13 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var googleSignInClient : GoogleSignInClient
     private lateinit var auth: FirebaseAuth
 
-    val postManager: PostManager = PostManager()
-    val userManager: UserManager = UserManager()
+    val handler :mHandler = mHandler()
+    val postManager: PostManager = PostManager(mHandler())
+    var isThreadEnd = false
+    var isThreadEnd_post = false
+
 
     val myProgressBar: MyProgressBar = MyProgressBar()
-    val handler: mHandler = mHandler()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,9 +41,8 @@ class LoginActivity : AppCompatActivity() {
 
     fun endActivity() {
         myProgressBar.progressOFF()
-        val intent: Intent = Intent()
-        intent.putExtra("postManager", postManager)
-        intent.putExtra("userManager", userManager)
+        val intent: Intent = Intent(this,MainActivity::class.java)
+        intent.putExtra("postManager", postManager.vec)
         setResult(Activity.RESULT_OK, intent)
         finish()
     }
@@ -53,7 +53,14 @@ class LoginActivity : AppCompatActivity() {
 
             val bundle: Bundle = msg.data
             if (!(bundle.isEmpty)) {
-                if (bundle.getBoolean("isThreadEnd")) {
+                if (bundle.containsKey("isThreadEnd")) {
+                    isThreadEnd = bundle.getBoolean("isThreadEnd")
+                }
+                if (bundle.containsKey("isThreadEnd_post")) {
+                    isThreadEnd_post = bundle.getBoolean("isThreadEnd_post")
+                }
+
+                if (isThreadEnd && isThreadEnd_post) {
                     endActivity()
                 }
             }
@@ -65,14 +72,10 @@ class LoginActivity : AppCompatActivity() {
             val message: Message = handler.obtainMessage()
             val bundle: Bundle = Bundle()
 
-            val boolean1: Boolean = postManager.readPost()
-            val boolean2: Boolean = userManager.readUser()
+            postManager.readPost()
 
-            if (boolean1 && boolean2)
-                bundle.putBoolean("isThreadEnd", true)
-            else
-                bundle.putBoolean("isThreadEnd", false)
 
+            bundle.putBoolean("isThreadEnd", true)
             message.data = bundle
             handler.sendMessage(message)
         }
