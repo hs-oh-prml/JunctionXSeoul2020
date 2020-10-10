@@ -74,7 +74,7 @@ class PopupReadActivity : FragmentActivity() {
                     checkCommentNum()
                     // 덧글 DB에 반영해야하고, MainActivtity에 있는 PostManager 내부의 posts에도 반영시켜야 함
 
-                    postDB = FirebaseDatabase.getInstance().getReference("post/comments")
+                    postDB = FirebaseDatabase.getInstance().getReference("post/${post.pID}/comments")
                     postDB.setValue(post.comments)
                 }
             }
