@@ -11,10 +11,13 @@ import android.widget.TextView
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.junctionxseoul2020.adapter.CommentListAdapater
 import com.example.junctionxseoul2020.data.Post
 import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.activity_popup_read.*
+import kotlinx.android.synthetic.main.activity_temp.*
+import java.net.URLDecoder
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -57,6 +60,12 @@ class PopupReadActivity : FragmentActivity() {
         commentListView.adapter = adapter
 
         checkCommentNum()
+
+        var url = URLDecoder.decode(post.img, "utf-8")
+
+        Glide.with(applicationContext).load(url).into(imageView)
+
+
 
         var arr=ArrayList<String>()
         postDB = FirebaseDatabase.getInstance().getReference("post/${post.pid}")

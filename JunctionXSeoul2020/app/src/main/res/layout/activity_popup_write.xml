@@ -118,16 +118,6 @@
                 android:paddingBottom="10dp"
                 android:scrollbars="vertical" />
             <Button
-                android:id="@+id/stop_camera"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginLeft="15dp"
-                android:layout_marginBottom="5dp"
-                android:background="@drawable/camera_icon"
-                android:gravity="center_vertical"
-                />
-            <Button
                 android:id="@+id/cameraShotBtn"
                 android:layout_width="30dp"
                 android:layout_height="30dp"

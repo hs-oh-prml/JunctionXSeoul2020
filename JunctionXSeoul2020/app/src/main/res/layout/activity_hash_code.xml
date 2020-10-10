@@ -27,13 +27,23 @@
         android:ems="12"
         android:inputType="textPersonName"
         android:hint="HashCode is here"
-        android:textColorHint="#C5C5C5" />
+        android:textColorHint="#C5C5C5"
+        android:textColor="#E5E5E5"
+        />
+    <TextView
+        android:id="@+id/checkHashCode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:ems="12"
+        android:text="Click here for check hashcode!"
+        android:padding="1dp"
+        android:textColor="#D5D5D5" />
 
     <Space
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1" />
-
     <Button
         android:id="@+id/btn_start"
         android:layout_width="match_parent"
