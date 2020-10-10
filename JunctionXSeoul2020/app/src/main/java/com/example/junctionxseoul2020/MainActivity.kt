@@ -43,14 +43,17 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         )
         setContentView(R.layout.activity_main)
 
-        init()
-    }
-
-    private fun init(){
-        postManager= PostManager()
         NaverMapSdk.getInstance(this).client = NaverMapSdk.NaverCloudPlatformClient("4fdqbc9gq2")
         locationSource = FusedLocationSource(this, 0)
 
+        val startIntent: Intent = Intent(this, StartLoading::class.java)
+        startActivityForResult(startIntent, 764)
+
+//        init()
+    }
+
+    private fun init() {
+        postManager = PostManager()
 
         val loginIntent = Intent(this, LoginActivity::class.java)
         startActivityForResult(loginIntent, 1)
@@ -59,11 +62,14 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
+        if (requestCode == 764) {
+            init()
+        }
         /*
         로그인 액티비티가 종료된 경우
         */
-        if (requestCode == 1) {
-            if(data!=null){
+        else if (requestCode == 1) {
+            if (data != null) {
                 val vec = data.getStringArrayListExtra("postManager")
                 for (i in vec) {
                     val post = gson.fromJson(i,Post::class.java)
@@ -83,9 +89,9 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         /*
         게시글 작성 액티비티가 종료된 경우
         */
-        else if(requestCode == 11) {
-            if(data!=null){
-                if(data.getBooleanExtra("isAdded",false)) {
+        else if (requestCode == 11) {
+            if (data != null) {
+                if (data.getBooleanExtra("isAdded", false)) {
                     val post = data.getSerializableExtra("post") as Post
                     Log.d("Log_POST", post.toString())
                     val temp = Marker()
@@ -100,13 +106,13 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                     temp.map = naverMap
                 }
             }
-        }
-        else if(requestCode == 992) {
-            if(data!=null){
+        } else if (requestCode == 992) {
+            if (data != null) {
                 val post = data.getSerializableExtra("post") as Post
                 for(i in postManager.posts){
                     if(i.pid==post.pid)
                         i.comments=post.comments
+
 
                 }
             }
@@ -131,7 +137,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
-
 
     fun showMarker(){
         Log.d("LOG_POSTMANGER", postManager.posts.toString())
