@@ -21,9 +21,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
         <activity
-            android:name=".NavigationDrawerActivity"
-            android:label="@string/title_activity_navigation_drawer"
-            >
+            android:name=".NavigationDrawerActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -34,7 +32,6 @@
         <activity
             android:name=".StartLoading"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen" />
-        <activity android:name=".TempActivity" />
         <activity
             android:name=".PopupCommentWriteActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar"
@@ -48,8 +45,7 @@
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
         <activity android:name=".LoginActivity" />
         <activity android:name=".HashCodeActivity" />
-        <activity android:name=".MainActivity">
-        </activity>
+        <activity android:name=".MainActivity" />
     </application>
 
 </manifest>

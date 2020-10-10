@@ -9,24 +9,14 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.navigation.NavigationView
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
-import androidx.navigation.ui.setupActionBarWithNavController
-import androidx.navigation.ui.setupWithNavController
-import androidx.drawerlayout.widget.DrawerLayout
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.core.view.GravityCompat
-import com.bumptech.glide.Glide
-import com.example.junctionxseoul2020.apiService.RetrofitService
 import com.example.junctionxseoul2020.data.Post
 import com.example.junctionxseoul2020.data.PostManager
-import com.example.junctionxseoul2020.data.ZepetoRequest
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -35,18 +25,11 @@ import com.google.firebase.database.ValueEventListener
 import com.google.gson.Gson
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.*
+import com.naver.maps.map.overlay.CircleOverlay
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.Overlay
 import com.naver.maps.map.util.FusedLocationSource
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_navigation_drawer.*
-import kotlinx.android.synthetic.main.activity_temp.*
-import kotlinx.android.synthetic.main.nav_header_main.*
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
-import org.json.JSONArray
-import org.json.JSONObject
 
 class NavigationDrawerActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -72,37 +55,15 @@ class NavigationDrawerActivity : AppCompatActivity(), OnMapReadyCallback {
         )
         setContentView(R.layout.activity_navigation_drawer)
 
-//        profile.setImageBitmap()
-
         hamburger.setOnClickListener {
             drawer_layout.openDrawer(GravityCompat.START)
         }
-
-//        val toolbar: Toolbar = findViewById(R.id.toolbar)
-//        setSupportActionBar(toolbar)
-//
-//        val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
-
-//        val navView: NavigationView = findViewById(R.id.nav_view)
-//        val navController = findNavController(R.id.nav_host_fragment)
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
-//        appBarConfiguration = AppBarConfiguration(
-//            setOf(
-//                R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow
-//            ), drawerLayout
-//        )
-//        setupActionBarWithNavController(navController, appBarConfiguration)
-//        navView.setupWithNavController(navController)
 
         NaverMapSdk.getInstance(this).client = NaverMapSdk.NaverCloudPlatformClient("4fdqbc9gq2")
         locationSource = FusedLocationSource(this, 0)
 
         val startIntent: Intent = Intent(this, StartLoading::class.java)
         startActivityForResult(startIntent, 764)
-
-
-//        init()
     }
 
     private fun init() {
@@ -165,8 +126,6 @@ class NavigationDrawerActivity : AppCompatActivity(), OnMapReadyCallback {
                 for (i in postManager.posts) {
                     if (i.pid == post.pid)
                         i.comments = post.comments
-
-
                 }
             }
         }
@@ -218,6 +177,12 @@ class NavigationDrawerActivity : AppCompatActivity(), OnMapReadyCallback {
         fusedLocationClient.lastLocation.addOnSuccessListener {
             lat = it.latitude
             lng = it.longitude
+
+            val overlay = CircleOverlay()
+            overlay.center = LatLng(lat, lng)
+            overlay.map = naverMap
+            overlay.radius = 1000.0
+            overlay.color = getColor(R.color.overlayColor)
         }
 
         val rdb = FirebaseDatabase.getInstance().getReference("post/")
@@ -232,14 +197,10 @@ class NavigationDrawerActivity : AppCompatActivity(), OnMapReadyCallback {
                     showMarker()
                 }
             }
-
             override fun onCancelled(error: DatabaseError) {
 //                TODO("Not yet implemented")
             }
-
         })
-
-
     }
 
     fun onWritePostBtnClicked(view: View) {
