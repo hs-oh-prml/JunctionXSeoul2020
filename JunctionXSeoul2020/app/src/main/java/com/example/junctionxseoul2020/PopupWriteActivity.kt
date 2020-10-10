@@ -5,7 +5,8 @@ import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
-import androidx.appcompat.app.AppCompatActivity
+import android.graphics.drawable.BitmapDrawable
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -17,22 +18,23 @@ import com.bumptech.glide.Glide
 import com.example.junctionxseoul2020.apiService.RetrofitService
 import com.example.junctionxseoul2020.data.Post
 import com.example.junctionxseoul2020.data.ZepetoRequest
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.StorageReference
+import com.google.firebase.storage.ktx.storage
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_temp.*
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
-import org.json.JSONArray
-import org.json.JSONObject
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
+import java.io.ByteArrayOutputStream
 import java.io.IOException
+import java.net.URI
 import java.net.URLEncoder
-import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -42,6 +44,8 @@ class PopupWriteActivity : FragmentActivity() {
 
     lateinit var postDB: DatabaseReference
     lateinit var userDB: DatabaseReference
+
+    var storage = Firebase.storage
 
     lateinit var editText: EditText
     lateinit var zepetoImg: ImageView
@@ -162,18 +166,51 @@ class PopupWriteActivity : FragmentActivity() {
         return builder.build()
     }
 
-    // screen capture: view -> image
-    fun captureView(){
-        var bitmap = Bitmap.createBitmap(zepetoImg.width, zepetoImg.height, Bitmap.Config.ARGB_8888)
-        var canvas = Canvas(bitmap)
-        image_view.draw(canvas)
-    }
-
-
     fun onCloseBtnClicked(view: View) {
         val intent: Intent = Intent()
         setResult(Activity.RESULT_OK, intent)
         finish()
+    }
+
+    // upload image on firebase storage
+    fun uploadImage(pID: String, uID: String, story: String, formatted: String) {
+
+        // Create a storage reference from our app
+        var storageRef = storage.reference
+        //var imagesRef: StorageReference? = storageRef.child("images")
+        var imageRef = storageRef.child("images/${pID}.jpg")
+
+        // Get the data from an ImageView as bytes
+            // var bitmap = Bitmap.createBitmap(zepetoImg.width, zepetoImg.height, Bitmap.Config.ARGB_8888)
+        var bitmap = (zepetoImg.drawable as BitmapDrawable).bitmap
+        val baos = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+        val data = baos.toByteArray()
+
+
+        var uploadTask = imageRef.putBytes(data)
+        val urlTask = uploadTask.continueWithTask { task ->
+            if (!task.isSuccessful) {
+                task.exception?.let {
+                    throw it
+                }
+            }
+            imageRef.downloadUrl
+        }.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val downloadUri = task.result
+                Log.d("LOG_URL",downloadUri.toString())
+            } else {
+                // Handle failures
+                // ...
+            }
+        }.addOnSuccessListener {
+            val url = URLEncoder.encode(it.toString(),"utf-8")
+            val item = Post(pID, url, uID, story, formatted, latitude, longitude, null)
+            postDB.child("/$pID").setValue(item)
+            userDB = FirebaseDatabase.getInstance().getReference("user/$uID")
+            userDB.child("/pID").setValue(pID)
+        }
     }
 
     fun onSubmitPostBtnClicked(view: View) {
@@ -194,12 +231,7 @@ class PopupWriteActivity : FragmentActivity() {
         val uID = App.prefs.getUserUID()!!
         postDB = FirebaseDatabase.getInstance().getReference("post")
         val pID = postDB.push().key!!
-        val url = URLEncoder.encode("https://firebasestorage.googleapis.com/v0/b/junctionxseoul2020.appspot.com/o/laptop.jpg?alt=media&token=8df3b0b4-62bd-452f-af49-4463bab37c4a","utf-8")
-        val item = Post(pID, url, uID, story, formatted, latitude, longitude, null)
-        postDB.child("/$pID").setValue(item)
-
-        userDB = FirebaseDatabase.getInstance().getReference("user/$uID")
-        userDB.child("/pID").setValue(pID)
+        uploadImage(pID, uID, story, formatted)
         // DB에 저장하는 코드 종료
     }
 }
