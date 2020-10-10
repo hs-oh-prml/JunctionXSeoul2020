@@ -1,18 +1,13 @@
 package com.example.junctionxseoul2020
 
 import android.annotation.SuppressLint
-import android.content.ContentValues
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
-import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
+import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
-import android.os.Handler
-import android.provider.MediaStore
-
 import android.util.Log
-import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.example.junctionxseoul2020.apiService.RetrofitService
 import com.example.junctionxseoul2020.data.ZepetoRequest
@@ -26,7 +21,7 @@ import org.json.JSONObject
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
-import java.io.*
+import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -88,12 +83,31 @@ class TempActivity : AppCompatActivity() {
         view_capture.setOnClickListener {
             captureView()
         }
+        deep_link.setOnClickListener {
+
+//            var pkg = "me.zepeto.main"
+//            val url = "ZEPETO://HOME"
+//            val str ="ZEPETO://HOME/MENU/BOOTH";
+//            val intent =Intent(Intent.ACTION_VIEW, Uri.parse(url));
+//            startActivity(intent)
+
+
+            val intent = Intent(Intent.ACTION_VIEW)
+            intent.addCategory(Intent.CATEGORY_DEFAULT)
+            intent.addCategory(Intent.CATEGORY_BROWSABLE)
+            intent.data = Uri.parse("zepeto://home/capture")
+            startActivity(intent)
+//            val i = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+//            var i = packageManager.getLaunchIntentForPackage(pkg)
+//            startActivity(i)
+        }
     }
     fun captureView(){
 
         var bitmap = Bitmap.createBitmap(image_view.width, image_view.height, Bitmap.Config.ARGB_8888)
         var canvas = Canvas(bitmap)
         image_view.draw(canvas)
+
         var date = SimpleDateFormat("yyyyMMddHHmmss").format(Date())
         var filename = "tempImage${date}.jpg"
         image_view2.setImageBitmap(bitmap)
