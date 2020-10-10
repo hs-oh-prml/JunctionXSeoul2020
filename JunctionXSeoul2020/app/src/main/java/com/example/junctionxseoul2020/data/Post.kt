@@ -17,3 +17,6 @@ data class Post(
     val uploadLng: Double,
     var comments: ArrayList<String>?
 ) : Serializable
+{
+    constructor(): this("pid", "img", "uid", "story", "time", 37.541601, 127.078838, null){}
+}
