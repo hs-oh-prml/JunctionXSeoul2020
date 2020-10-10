@@ -282,7 +282,6 @@ class PopupWriteActivity : FragmentActivity() {
         closeCameraPreviewSession()
         closeCamera()
     }
-
     fun checkPermission(permissions: Array<out String>, flag: Int): Boolean {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             for (permission in permissions) {
@@ -312,7 +311,6 @@ class PopupWriteActivity : FragmentActivity() {
             }
         }
     }
-
     fun readFile(){
         photoBoothList = ArrayList()
 //        Thread(Runnable {
@@ -349,11 +347,12 @@ class PopupWriteActivity : FragmentActivity() {
 
     // function: Call Zepeto Rendering API
     @SuppressLint("CheckResult")
-    fun ZepetoAPI(){
+    fun ZepetoAPI() {
 //        photoBoothList.shuffle()
 
         var photobooth_id = photoBoothList.random()
-        var body = ZepetoRequest("booth",
+        var body = ZepetoRequest(
+            "booth",
             400,
             ZepetoRequest.hashCodes(arrayListOf(hashCode))
         )
@@ -378,10 +377,11 @@ class PopupWriteActivity : FragmentActivity() {
                 runOnUiThread {
                     Glide.with(applicationContext).load(url).into(zepetoImg)
                 }
-            },{
-                Log.v("Fail","")
+            }, {
+                Log.v("Fail", "")
             })
     }
+
     fun createOkHttpClient(): OkHttpClient {        // monitoring HTTP log
         val builder = OkHttpClient.Builder()
         val interceptor = HttpLoggingInterceptor()
@@ -392,7 +392,7 @@ class PopupWriteActivity : FragmentActivity() {
 
     fun onCloseBtnClicked(view: View) {
         val intent: Intent = Intent()
-        intent.putExtra("isAdded",false)
+        intent.putExtra("isAdded", false)
         setResult(Activity.RESULT_OK, intent)
         finish()
     }
@@ -406,8 +406,9 @@ class PopupWriteActivity : FragmentActivity() {
         var imageRef = storageRef.child("images/${pID}.jpg")
         // frame
         // Get the data from an ImageView as bytes
-            // var bitmap = Bitmap.createBitmap(zepetoImg.width, zepetoImg.height, Bitmap.Config.ARGB_8888)
-//        var bitmap = (zepetoImg.drawable as BitmapDrawable).bitmap
+      
+        // var bitmap = Bitmap.createBitmap(zepetoImg.width, zepetoImg.height, Bitmap.Config.ARGB_8888)
+//      var bitmap = (zepetoImg.drawable as BitmapDrawable).bitmap
 
         var bitmap:Bitmap
         var canvas:Canvas
@@ -434,23 +435,22 @@ class PopupWriteActivity : FragmentActivity() {
         }.addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 val downloadUri = task.result
-                Log.d("LOG_URL",downloadUri.toString())
+                Log.d("LOG_URL", downloadUri.toString())
             } else {
                 // Handle failures
                 // ...
             }
         }.addOnSuccessListener {
-            val url = URLEncoder.encode(it.toString(),"utf-8")
+            val url = URLEncoder.encode(it.toString(), "utf-8")
             val item = Post(pID, url, uID, story, formatted, latitude, longitude, null)
             postDB.child("/$pID").setValue(item)
             userDB = FirebaseDatabase.getInstance().getReference("user/$uID")
             userDB.child("/pID").setValue(pID)
 
 
-
             val intent: Intent = Intent()
-            intent.putExtra("post",item)
-            intent.putExtra("isAdded",true)
+            intent.putExtra("post", item)
+            intent.putExtra("isAdded", true)
             setResult(Activity.RESULT_OK, intent)
             finish()
         }
@@ -483,5 +483,21 @@ class PopupWriteActivity : FragmentActivity() {
 
 
         // DB에 저장하는 코드 종료
+    }
+
+    fun onCameraOnBtnClicked(view: View) {
+
+    }
+
+    fun onRefreshBtnClicked(view: View) {
+
+    }
+
+    fun onShoppingBtnClicked(view: View) {
+
+    }
+
+    fun onCameraShotBtnClicked(view: View) {
+
     }
 }
