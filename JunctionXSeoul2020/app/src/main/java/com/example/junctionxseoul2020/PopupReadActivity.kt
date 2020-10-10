@@ -13,10 +13,14 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.junctionxseoul2020.adapter.CommentListAdapater
 import com.example.junctionxseoul2020.data.Post
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.activity_popup_read.*
 import java.util.*
 
 class PopupReadActivity : FragmentActivity() {
+
+    lateinit var postDB: DatabaseReference
 
     lateinit var post: Post
     lateinit var commentListView: RecyclerView
@@ -70,6 +74,8 @@ class PopupReadActivity : FragmentActivity() {
                     checkCommentNum()
                     // 덧글 DB에 반영해야하고, MainActivtity에 있는 PostManager 내부의 posts에도 반영시켜야 함
 
+                    postDB = FirebaseDatabase.getInstance().getReference("post/comments")
+                    postDB.setValue(post.comments)
                 }
             }
         }
