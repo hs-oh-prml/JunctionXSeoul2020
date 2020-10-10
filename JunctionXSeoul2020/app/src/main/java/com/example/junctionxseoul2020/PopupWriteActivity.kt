@@ -143,14 +143,14 @@ class PopupWriteActivity : FragmentActivity() {
     }
     fun init(){
 
-        camera.setOnClickListener {
+        cameraOnBtn.setOnClickListener {
             if(checkPermission(CAMERA_PERMISSION, FLAG_PERM_CAMERA)){
                 openCamera()
             } else {
                 return@setOnClickListener
             }
         }
-        refresh_btn.setOnClickListener {
+        refreshBtn.setOnClickListener {
             ZepetoAPI()
         }
         stop_camera.setOnClickListener {
@@ -158,7 +158,7 @@ class PopupWriteActivity : FragmentActivity() {
             closeCamera()
         }
 
-        shop_btn.setOnClickListener {
+        shoppingBtn.setOnClickListener {
             val intent = Intent(Intent.ACTION_VIEW)
             intent.addCategory(Intent.CATEGORY_DEFAULT)
             intent.addCategory(Intent.CATEGORY_BROWSABLE)
