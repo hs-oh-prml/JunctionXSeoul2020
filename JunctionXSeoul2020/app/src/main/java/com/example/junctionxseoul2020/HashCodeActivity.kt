@@ -34,9 +34,6 @@ class HashCodeActivity : AppCompatActivity() {
         btn_start.setOnClickListener {
             val name = et_hashCode.text.toString().trim()
             if(initUserInfo(name)) {
-//
-//                val intent = Intent(this, temp_realtimedb::class.java)
-//                startActivity(intent)
                 finish()
             } else {
                 Toast.makeText(this, "계정 등록 오류", Toast.LENGTH_SHORT).show()
@@ -53,6 +50,7 @@ class HashCodeActivity : AppCompatActivity() {
             val uid = user.uid
             val rdb = FirebaseDatabase.getInstance().getReference("user")
             rdb.child(uid).child("hashCode").setValue(hashCode)
+            rdb.child(uid).child("pID").setValue("none")
             App.prefs.setUserInfo(uid, hashCode)
             return true
         }

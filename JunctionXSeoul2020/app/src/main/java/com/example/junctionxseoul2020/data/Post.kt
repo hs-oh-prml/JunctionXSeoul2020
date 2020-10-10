@@ -1,5 +1,6 @@
 package com.example.junctionxseoul2020.data
 
+import java.io.Serializable
 import java.util.*
 
 data class Post(
@@ -11,4 +12,4 @@ data class Post(
     val uploadLat: Double,
     val uploadLng: Double,
     val comments: Vector<String>
-)
+): Serializable

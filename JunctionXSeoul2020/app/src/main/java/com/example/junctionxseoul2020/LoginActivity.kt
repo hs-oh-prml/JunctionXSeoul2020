@@ -26,11 +26,18 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var googleSignInClient : GoogleSignInClient
     private lateinit var auth: FirebaseAuth
 
-    val postManager: PostManager = PostManager()
-    val userManager: UserManager = UserManager()
+    val handler: mHandler = mHandler()
+
+    val postManager: PostManager = PostManager(mHandler())
+    val userManager: UserManager = UserManager(mHandler())
+
+    var isThreadEnd = false
+    var isThreadEnd_user = false
+    var isThreadEnd_post = false
+
 
     val myProgressBar: MyProgressBar = MyProgressBar()
-    val handler: mHandler = mHandler()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,6 +50,8 @@ class LoginActivity : AppCompatActivity() {
         val intent: Intent = Intent()
         intent.putExtra("postManager", postManager)
         intent.putExtra("userManager", userManager)
+        Log.d("LOG_POSTMANAGER", postManager.toString())
+        Log.d("LOG_USERMANAGER", userManager.toString())
         setResult(Activity.RESULT_OK, intent)
         finish()
     }
@@ -53,7 +62,17 @@ class LoginActivity : AppCompatActivity() {
 
             val bundle: Bundle = msg.data
             if (!(bundle.isEmpty)) {
-                if (bundle.getBoolean("isThreadEnd")) {
+                if (bundle.containsKey("isThreadEnd")) {
+                    isThreadEnd = bundle.getBoolean("isThreadEnd")
+                }
+                if (bundle.containsKey("isThreadEnd_post")) {
+                    isThreadEnd_post = bundle.getBoolean("isThreadEnd_post")
+                }
+                if (bundle.containsKey("isThreadEnd_user")) {
+                    isThreadEnd_user = bundle.getBoolean("isThreadEnd_user")
+                }
+
+                if (isThreadEnd && isThreadEnd_post && isThreadEnd_user) {
                     endActivity()
                 }
             }
@@ -65,14 +84,10 @@ class LoginActivity : AppCompatActivity() {
             val message: Message = handler.obtainMessage()
             val bundle: Bundle = Bundle()
 
-            val boolean1: Boolean = postManager.readPost()
-            val boolean2: Boolean = userManager.readUser()
+            postManager.readPost()
+            userManager.readUser()
 
-            if (boolean1 && boolean2)
-                bundle.putBoolean("isThreadEnd", true)
-            else
-                bundle.putBoolean("isThreadEnd", false)
-
+            bundle.putBoolean("isThreadEnd", true)
             message.data = bundle
             handler.sendMessage(message)
         }
@@ -125,8 +140,6 @@ class LoginActivity : AppCompatActivity() {
                     // Sign in success, update UI with the signed-in user's information
                     Log.d("TAG", "signInWithCredential:success")
                     val user = auth.currentUser
-                    //updateUI(user)
-
                     val rdb = FirebaseDatabase.getInstance().getReference("user")
                     rdb.child("/${user?.uid}")
                         .addListenerForSingleValueEvent( object : ValueEventListener {
@@ -148,8 +161,6 @@ class LoginActivity : AppCompatActivity() {
                 } else {
                     // If sign in fails, display a message to the user.
                     Log.w("TAG", "signInWithCredential:failure", task.exception)
-                    //Snackbar.make(view, "Authentication Failed.", Snackbar.LENGTH_SHORT).show()
-                    //updateUI(null)
                 }
             }
     }

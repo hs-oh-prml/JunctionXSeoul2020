@@ -29,9 +29,15 @@ class MainActivity : AppCompatActivity() {
         로그인 액티비티가 종료된 경우
         */
         if (requestCode == 1) {
-            postManager = data?.getSerializableExtra("postManager") as PostManager
-            userManager = data.getSerializableExtra("userManager") as UserManager
+            if(data != null) {
+                postManager = data.getSerializableExtra("postManager") as PostManager
+                userManager = data.getSerializableExtra("userManager") as UserManager
+            } else {
+                Log.d("Log_DATA", "data null")
+            }
         }
+
+        Log.d("Log_postManager", postManager.toString())
     }
 
 }

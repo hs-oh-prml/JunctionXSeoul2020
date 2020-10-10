@@ -14,7 +14,6 @@
         <activity android:name=".LoginActivity"/>
         <activity android:name=".TempActivity"/>
         <activity android:name=".HashCodeActivity"/>
-        <activity android:name=".temp_realtimedb"/>
          
         <activity android:name=".MainActivity">
             <intent-filter>
