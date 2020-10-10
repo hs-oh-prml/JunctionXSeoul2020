@@ -1,19 +1,34 @@
 package com.example.junctionxseoul2020
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.Canvas
+import android.content.pm.PackageManager
+import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
+import android.hardware.camera2.*
+import android.hardware.camera2.params.StreamConfigurationMap
+import android.media.Image
+import android.media.ImageReader
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.os.HandlerThread
+import android.os.Handler
 import android.util.Log
+import android.util.Size
+import android.view.Surface
 import android.view.View
 import android.view.WindowManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.Toast
+import androidx.annotation.WorkerThread
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 import com.bumptech.glide.Glide
 import com.example.junctionxseoul2020.apiService.RetrofitService
@@ -24,8 +39,11 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
+import com.naver.maps.map.LocationTrackingMode
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_popup_write.*
 import kotlinx.android.synthetic.main.activity_temp.*
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -58,6 +76,36 @@ class PopupWriteActivity : FragmentActivity() {
     lateinit var retrofit: RetrofitService          // retrofit API manager
     lateinit var photoBoothList: ArrayList<String>  // photobooth id list
     lateinit var hashCode:String                    // user's hashcode
+
+    val CAMERA_PERMISSION = arrayOf(Manifest.permission.CAMERA) // camera permision
+    val FLAG_PERM_CAMERA = 98                                                // permission flag
+    var cameraDevice: CameraDevice? = null
+    lateinit var texture: SurfaceTexture
+    lateinit var captureRequestBuilder: CaptureRequest.Builder
+    var cameraCaptureSessions: CameraCaptureSession? = null
+    var faceCamera = false
+    var cameraId = ""
+    lateinit var imageDimension:Size
+    var map: StreamConfigurationMap? = null
+    val stateCallback = object: CameraDevice.StateCallback() {
+        override fun onOpened(p0: CameraDevice) {
+//            TODO("Not yet implemented")
+            cameraDevice = p0
+            createCameraPreviewSession()
+        }
+
+        override fun onDisconnected(p0: CameraDevice) {
+//            TODO("Not yet implemented")
+            cameraDevice!!.close()
+        }
+
+        override fun onError(p0: CameraDevice, p1: Int) {
+//            TODO("Not yet implemented")
+            cameraDevice!!.close()
+            cameraDevice = null
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -74,6 +122,8 @@ class PopupWriteActivity : FragmentActivity() {
         latitude = intent.getDoubleExtra("latitude", 0.0)
         longitude = intent.getDoubleExtra("longitude", 0.0)
 
+        init()
+
         // initialize user's hash code
         hashCode = "K4R33L"
         // load photobooth list from file 'data.txt'
@@ -89,7 +139,180 @@ class PopupWriteActivity : FragmentActivity() {
         // zepetoImg 이미지뷰에 이미지 업로드 시작
         ZepetoAPI()
         // zepetoImg 이미지뷰에 이미지 업로드 종료
+
     }
+    fun init(){
+
+        camera.setOnClickListener {
+            if(checkPermission(CAMERA_PERMISSION, FLAG_PERM_CAMERA)){
+                openCamera()
+            } else {
+                return@setOnClickListener
+            }
+        }
+        refresh_btn.setOnClickListener {
+            ZepetoAPI()
+        }
+        stop_camera.setOnClickListener {
+            closeCameraPreviewSession()
+            closeCamera()
+        }
+
+        shop_btn.setOnClickListener {
+            val intent = Intent(Intent.ACTION_VIEW)
+            intent.addCategory(Intent.CATEGORY_DEFAULT)
+            intent.addCategory(Intent.CATEGORY_BROWSABLE)
+            intent.data = Uri.parse("zepeto://home/shop/hair")
+            startActivity(intent)
+        }
+
+    }
+    fun openCamera(){
+        Log.e("OpenCamera", "openCamera() method called")
+        var manager = getSystemService(Context.CAMERA_SERVICE) as CameraManager
+        try{
+            cameraId = if(faceCamera){
+                manager.cameraIdList[1]
+            } else{
+                manager.cameraIdList[0]
+            }
+            val characteristics = manager.getCameraCharacteristics(cameraId)
+            map = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)
+            imageDimension = map!!.getOutputSizes<SurfaceTexture>(SurfaceTexture::class.java)[0]
+
+            if(ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
+                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA), 100)
+                return
+            }
+            manager.openCamera(cameraId!!, stateCallback, null)
+        } catch (e: CameraAccessException){
+            e.printStackTrace()
+        }
+    }
+    fun createCameraPreviewSession(){
+        Log.d("CameraPreviewSession", "Preview Start")
+        try{
+            texture = background_image.surfaceTexture
+            texture.setDefaultBufferSize(zepetoImg.width, zepetoImg.height)
+            var surfaces = ArrayList<Surface>()
+            var surface = Surface(texture)
+            captureRequestBuilder = cameraDevice!!.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW)
+            captureRequestBuilder.addTarget(surface)
+            surfaces.add(surface)
+
+            var width = 330;
+            var height = 330;
+            Log.d("Image_Size", "${width}, ${height}")
+            var reader = ImageReader.newInstance(width, height, ImageFormat.JPEG, 1)
+            var readerListener = ImageReader.OnImageAvailableListener { p0 ->
+                var image: Image? = null;
+                try {
+                    image = p0!!.acquireNextImage()
+                    var buffer = image.planes[0].buffer
+                    image.close()
+                    buffer.clear()
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                }
+            }
+            captureRequestBuilder.addTarget(reader.surface)
+            surfaces.add(reader.surface)
+
+            var backgroundThread = HandlerThread("streaming")
+            backgroundThread.start()
+            var backgroundHandler = Handler(backgroundThread.looper)
+            reader.setOnImageAvailableListener(readerListener, backgroundHandler)
+
+            cameraDevice!!.createCaptureSession(surfaces, object: CameraCaptureSession.StateCallback(){
+                override fun onConfigureFailed(p0: CameraCaptureSession) {
+//                    TODO("Not yet implemented")
+                }
+                override fun onConfigured(p0: CameraCaptureSession) {
+//                    TODO("Not yet implemented")
+                    if(cameraDevice == null){
+                        return
+                    }
+                    cameraCaptureSessions = p0
+                    updatePreview()
+                }
+            }, null)
+        } catch(e:CameraAccessException){
+            e.printStackTrace()
+        }
+    }
+    fun updatePreview(){
+        if(cameraDevice == null){
+            Log.d("Update_Preview","Error: Camera Device is null")
+            return
+        }
+        captureRequestBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO)
+        var thread = HandlerThread("preview")
+        thread.start()
+        var bgHandler = Handler(thread.looper)
+        try{
+            cameraCaptureSessions!!.setRepeatingRequest(captureRequestBuilder.build(), null, bgHandler)
+//            takePicture()
+        }catch (e: CameraAccessException){
+            e.printStackTrace()
+        }
+
+    }
+    fun closeCameraPreviewSession(){
+        if(cameraCaptureSessions != null){
+            cameraCaptureSessions!!.close()
+            cameraCaptureSessions = null
+        }
+    }
+    fun closeCamera(){
+        if(null != cameraDevice){
+            cameraDevice!!.close()
+            cameraDevice = null
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        closeCameraPreviewSession()
+        closeCamera()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        closeCameraPreviewSession()
+        closeCamera()
+    }
+
+    fun checkPermission(permissions: Array<out String>, flag: Int): Boolean {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            for (permission in permissions) {
+                if (ContextCompat.checkSelfPermission(this, permission) !=
+                    PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(this, permissions,  flag)
+                    return false
+                }
+            }
+        }
+        return true
+    }
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        when (requestCode) {
+            FLAG_PERM_CAMERA -> {
+                for (grnat in grantResults) {
+                    if (grnat != PackageManager.PERMISSION_GRANTED) {
+                        Toast.makeText(this, "카메라 권한을 승인해야지만 카메라를 사용할 수 있습니다.", Toast.LENGTH_LONG).show()
+                    } else {
+                        openCamera()
+                    }
+                }
+            }
+        }
+    }
+
     fun readFile(){
         photoBoothList = ArrayList()
 //        Thread(Runnable {
@@ -180,16 +403,26 @@ class PopupWriteActivity : FragmentActivity() {
         var storageRef = storage.reference
         //var imagesRef: StorageReference? = storageRef.child("images")
         var imageRef = storageRef.child("images/${pID}.jpg")
-
+        // frame
         // Get the data from an ImageView as bytes
             // var bitmap = Bitmap.createBitmap(zepetoImg.width, zepetoImg.height, Bitmap.Config.ARGB_8888)
-        var bitmap = (zepetoImg.drawable as BitmapDrawable).bitmap
-        val baos = ByteArrayOutputStream()
+//        var bitmap = (zepetoImg.drawable as BitmapDrawable).bitmap
+
+        var bitmap:Bitmap
+        var canvas:Canvas
+        var baos:ByteArrayOutputStream
+        var data: ByteArray
+
+//        bitmap = Bitmap.createBitmap(frame_layout.width, frame_layout.height, Bitmap.Config.ARGB_8888)
+        bitmap = background_image.bitmap
+        canvas = Canvas(bitmap)
+        zepetoImg.draw(canvas)
+        baos = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
-        val data = baos.toByteArray()
 
-
+        data = baos.toByteArray()
         var uploadTask = imageRef.putBytes(data)
+
         val urlTask = uploadTask.continueWithTask { task ->
             if (!task.isSuccessful) {
                 task.exception?.let {
@@ -212,6 +445,8 @@ class PopupWriteActivity : FragmentActivity() {
             userDB = FirebaseDatabase.getInstance().getReference("user/$uID")
             userDB.child("/pID").setValue(pID)
         }
+
+
     }
 
     fun onSubmitPostBtnClicked(view: View) {

@@ -13,6 +13,7 @@ import com.example.junctionxseoul2020.apiService.RetrofitService
 import com.example.junctionxseoul2020.data.ZepetoRequest
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import kotlinx.android.synthetic.main.activity_popup_write.*
 import kotlinx.android.synthetic.main.activity_temp.*
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -104,7 +105,8 @@ class TempActivity : AppCompatActivity() {
     }
     fun captureView(){
 
-        var bitmap = Bitmap.createBitmap(image_view.width, image_view.height, Bitmap.Config.ARGB_8888)
+//        var bitmap = Bitmap.createBitmap(image_view.width, image_view.height, Bitmap.Config.ARGB_8888)
+        var bitmap = background_image.getBitmap()
         var canvas = Canvas(bitmap)
         image_view.draw(canvas)
 
