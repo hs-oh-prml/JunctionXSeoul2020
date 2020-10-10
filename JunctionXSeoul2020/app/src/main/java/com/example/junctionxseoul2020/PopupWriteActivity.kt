@@ -41,6 +41,7 @@ import kotlin.collections.ArrayList
 class PopupWriteActivity : FragmentActivity() {
 
     lateinit var postDB: DatabaseReference
+    lateinit var userDB: DatabaseReference
 
     lateinit var editText: EditText
     lateinit var zepetoImg: ImageView
@@ -163,11 +164,9 @@ class PopupWriteActivity : FragmentActivity() {
 
     // screen capture: view -> image
     fun captureView(){
-
         var bitmap = Bitmap.createBitmap(zepetoImg.width, zepetoImg.height, Bitmap.Config.ARGB_8888)
         var canvas = Canvas(bitmap)
         image_view.draw(canvas)
-
     }
 
 
@@ -198,15 +197,9 @@ class PopupWriteActivity : FragmentActivity() {
         val url = URLEncoder.encode("https://firebasestorage.googleapis.com/v0/b/junctionxseoul2020.appspot.com/o/laptop.jpg?alt=media&token=8df3b0b4-62bd-452f-af49-4463bab37c4a","utf-8")
         val item = Post(pID, url, uID, story, formatted, latitude, longitude, null)
         postDB.child("/$pID").setValue(item)
+
+        userDB = FirebaseDatabase.getInstance().getReference("user/$uID")
+        userDB.child("/pID").setValue(pID)
         // DB에 저장하는 코드 종료
     }
 }
-
-//val pID: String,
-//val img: String,
-//val uID: String,
-//val story: String,
-//val uploadTime: String,
-//val uploadLat: Double,
-//val uploadLng: Double,
-//val comments: java.util.ArrayList<String>?
