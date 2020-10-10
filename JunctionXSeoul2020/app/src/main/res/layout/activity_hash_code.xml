@@ -6,52 +6,49 @@
     android:layout_height="match_parent"
     android:background="@drawable/image_background"
     android:orientation="vertical"
-    tools:context=".LoginActivity">
+    tools:context=".HashCodeActivity">
 
     <TextView
-        android:id="@+id/textView2"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="4"
         android:gravity="center"
-        android:text="Junction X Seoul\n\n\nZepetalk Demo"
+        android:text="Write your Zepeto\n\n\nHashcode on input space!"
         android:textColor="#FFFFFF"
         android:textSize="20sp"
         android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/et_hashCode"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_gravity="center"
+        android:layout_weight="1"
+        android:ems="12"
+        android:inputType="textPersonName"
+        android:text="HashCode is here"
+        android:textColor="#C5C5C5" />
 
     <Space
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1" />
 
-
-    <com.google.android.gms.common.SignInButton
-        android:id="@+id/loginBtn"
+    <Button
+        android:id="@+id/btn_start"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_gravity="center"
         android:layout_marginLeft="80dp"
+        android:layout_marginTop="15dp"
         android:layout_marginRight="80dp"
         android:layout_weight="1"
-        android:textColor="#000000" />
+        android:background="#FFFFFF"
+        android:text="Go!"
+        android:textColor="#202020" />
 
     <Space
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="2" />
-
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:gravity="center"
-        android:text="Copyright Team GoRona"
-        android:textColor="#FFFFFF"
-        android:textSize="15sp" />
-
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
-
 </LinearLayout>

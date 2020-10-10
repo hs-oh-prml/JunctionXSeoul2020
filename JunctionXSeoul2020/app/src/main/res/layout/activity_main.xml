@@ -4,12 +4,40 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#202020"
     android:orientation="vertical"
     tools:context=".MainActivity">
 
     <FrameLayout
-        android:id="@+id/map"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent">
+
+        <fragment
+            android:id="@+id/map"
+            android:name="com.naver.maps.map.MapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        </fragment>
+
+        <Button
+            android:id="@+id/writePostBtn"
+            android:layout_width="220dp"
+            android:layout_height="80dp"
+            android:layout_gravity="bottom|center_horizontal"
+            android:layout_margin="10dp"
+            android:background="@drawable/button_border_2"
+            android:drawableLeft="@android:drawable/ic_menu_edit"
+            android:drawableRight="@android:drawable/ic_menu_edit"
+            android:drawablePadding="10dp"
+            android:gravity="center"
+            android:onClick="onWritePostBtnClicked"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:text="Write post!"
+            android:textColor="#FFFFFF"
+            android:textSize="15sp" />
+
+    </FrameLayout>
 
 </LinearLayout>
