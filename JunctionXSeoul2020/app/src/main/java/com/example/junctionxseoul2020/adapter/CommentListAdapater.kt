@@ -12,11 +12,7 @@ class CommentListAdapater(var comments: ArrayList<String>) :
     RecyclerView.Adapter<CommentListAdapater.ViewHolder>() {
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        var commentTextView: TextView
-
-        init {
-            commentTextView = itemView.findViewById(R.id.textView)
-        }
+        var commentTextView: TextView = itemView.findViewById(R.id.textView)
     }
 
     override fun onCreateViewHolder(
@@ -35,4 +31,6 @@ class CommentListAdapater(var comments: ArrayList<String>) :
     override fun getItemCount(): Int {
         return comments.size
     }
+
+
 }
