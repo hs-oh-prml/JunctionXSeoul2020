@@ -15,7 +15,11 @@ import android.widget.ImageView
 import androidx.fragment.app.FragmentActivity
 import com.bumptech.glide.Glide
 import com.example.junctionxseoul2020.apiService.RetrofitService
+import com.example.junctionxseoul2020.data.Post
 import com.example.junctionxseoul2020.data.ZepetoRequest
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_temp.*
@@ -27,6 +31,7 @@ import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.IOException
+import java.net.URLEncoder
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -34,6 +39,9 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 class PopupWriteActivity : FragmentActivity() {
+
+    lateinit var postDB: DatabaseReference
+    lateinit var userDB: DatabaseReference
 
     lateinit var editText: EditText
     lateinit var zepetoImg: ImageView
@@ -156,11 +164,9 @@ class PopupWriteActivity : FragmentActivity() {
 
     // screen capture: view -> image
     fun captureView(){
-
         var bitmap = Bitmap.createBitmap(zepetoImg.width, zepetoImg.height, Bitmap.Config.ARGB_8888)
         var canvas = Canvas(bitmap)
         image_view.draw(canvas)
-
     }
 
 
@@ -172,11 +178,12 @@ class PopupWriteActivity : FragmentActivity() {
 
     fun onSubmitPostBtnClicked(view: View) {
         val current = LocalDateTime.now()
-        val formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm")
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm")
         val formatted = current.format(formatter)
         Log.e("now time", formatted)
 
-        val story: String = editText.text.toString().trim()
+        var story: String = editText.text.toString().trim()
+        story = URLEncoder.encode(story, "utf-8")
 
         /*
         zepetoImg 이미지뷰에 업로드 되어있는 이미지를 가져오고,
@@ -184,7 +191,15 @@ class PopupWriteActivity : FragmentActivity() {
         총 5가지의 데이터를 DB에 저장해야 한다.
         */
         // DB에 저장하는 코드 시작
+        val uID = App.prefs.getUserUID()!!
+        postDB = FirebaseDatabase.getInstance().getReference("post")
+        val pID = postDB.push().key!!
+        val url = URLEncoder.encode("https://firebasestorage.googleapis.com/v0/b/junctionxseoul2020.appspot.com/o/laptop.jpg?alt=media&token=8df3b0b4-62bd-452f-af49-4463bab37c4a","utf-8")
+        val item = Post(pID, url, uID, story, formatted, latitude, longitude, null)
+        postDB.child("/$pID").setValue(item)
 
+        userDB = FirebaseDatabase.getInstance().getReference("user/$uID")
+        userDB.child("/pID").setValue(pID)
         // DB에 저장하는 코드 종료
     }
 }

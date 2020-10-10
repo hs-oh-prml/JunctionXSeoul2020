@@ -16,4 +16,6 @@ data class Post(
     val uploadLat: Double,
     val uploadLng: Double,
     val comments: ArrayList<String>?
-)
+) {
+    constructor(): this("pid", "img", "uid", "story", "time", 37.541601, 127.078838, null){}
+}
