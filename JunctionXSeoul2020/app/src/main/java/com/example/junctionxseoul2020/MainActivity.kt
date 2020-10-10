@@ -94,7 +94,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                         startActivityForResult(intent,992)
                         return true
                     }
-
                 }
                 temp.map = naverMap
             }
