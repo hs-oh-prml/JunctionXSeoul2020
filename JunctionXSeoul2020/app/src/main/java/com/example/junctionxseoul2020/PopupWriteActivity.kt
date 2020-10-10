@@ -125,7 +125,15 @@ class PopupWriteActivity : FragmentActivity() {
         init()
 
         // initialize user's hash code
-        hashCode = "K4R33L"
+//        hashCode = "K4R33L"
+
+        if(App.prefs.getUserHASHCODE() == null){
+            hashCode = ""
+        } else {
+            hashCode = App.prefs.getUserHASHCODE()!!
+        }
+        Log.d("user_hash_code", hashCode)
+
         // load photobooth list from file 'data.txt'
         readFile()
         // retrofit object
@@ -153,7 +161,8 @@ class PopupWriteActivity : FragmentActivity() {
         refreshBtn.setOnClickListener {
             ZepetoAPI()
         }
-        stop_camera.setOnClickListener {
+
+        cameraShotBtn.setOnClickListener {
             closeCameraPreviewSession()
             closeCamera()
         }

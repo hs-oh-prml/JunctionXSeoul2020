@@ -1,5 +1,7 @@
 package com.example.junctionxseoul2020
 
+import android.content.Intent
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
@@ -42,6 +44,14 @@ class HashCodeActivity : AppCompatActivity() {
                 Toast.makeText(this, "계정 등록 오류", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
+        }
+
+        checkHashCode.setOnClickListener {
+            val intent = Intent(Intent.ACTION_VIEW)
+            intent.addCategory(Intent.CATEGORY_DEFAULT)
+            intent.addCategory(Intent.CATEGORY_BROWSABLE)
+            intent.data = Uri.parse("zepeto://home/menu/profile")
+            startActivity(intent)
         }
     }
 
