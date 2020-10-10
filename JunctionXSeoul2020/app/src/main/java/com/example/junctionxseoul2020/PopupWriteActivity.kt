@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
+import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import androidx.fragment.app.FragmentActivity
@@ -186,5 +187,9 @@ class PopupWriteActivity : FragmentActivity() {
         // DB에 저장하는 코드 시작
 
         // DB에 저장하는 코드 종료
+
+        val intent: Intent = Intent()
+        setResult(Activity.RESULT_OK, intent)
+        finish()
     }
 }

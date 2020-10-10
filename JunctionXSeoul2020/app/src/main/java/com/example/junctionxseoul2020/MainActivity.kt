@@ -35,7 +35,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         init()
     }
 
-    private fun init(){
+    private fun init() {
         NaverMapSdk.getInstance(this).client = NaverMapSdk.NaverCloudPlatformClient("4fdqbc9gq2")
         locationSource = FusedLocationSource(this, 0)
 
@@ -69,7 +69,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         로그인 액티비티가 종료된 경우
         */
         if (requestCode == 1) {
-            if(data!=null){
+            if (data != null) {
                 val vec = data.getStringArrayListExtra("postManager")
                 val gson = Gson()
                 for (i in vec) {
@@ -80,7 +80,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         /*
         게시글 작성 액티비티가 종료된 경우
         */
-        else if(requestCode == 11) {
+        else if (requestCode == 11) {
 
         }
     }
@@ -142,7 +142,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 "2020.10.10 12:13",
                 37.541953,
                 127.079621,
-                ArrayList<String>()
+                null
             )
         )
         postManager.posts.add(
@@ -179,9 +179,11 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 override fun onClick(p0: Overlay): Boolean {
                     Log.e("onClick", post.pID)
                     val intent: Intent = Intent(this@MainActivity, PopupReadActivity::class.java)
-                    intent.putExtra("story", post.story)
-                    intent.putExtra("uploadTime", post.uploadTime)
-                    intent.putExtra("comments", post.comments)
+                    intent.putExtra("post", post)
+
+//                    intent.putExtra("story", post.story)
+//                    intent.putExtra("uploadTime", post.uploadTime)
+//                    intent.putExtra("comments", post.comments)
                     startActivity(intent)
                     return true
                 }

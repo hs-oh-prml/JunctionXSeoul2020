@@ -14,25 +14,25 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
-        <activity android:name=".TempActivity"/>
+        <activity android:name=".TempActivity" />
+        <activity
+            android:name=".PopupCommentWriteActivity"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".PopupWriteActivity"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".PopupReadActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
         <activity android:name=".LoginActivity" />
-        <activity android:name=".TempActivity" />
         <activity android:name=".HashCodeActivity" />
-        <activity android:name=".temp_realtimedb" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".temp_hashCode"/>
-        <activity android:name=".temp_realtimedb"/>
-        <activity android:name=".temp_firebase"/>
     </application>
 </manifest>

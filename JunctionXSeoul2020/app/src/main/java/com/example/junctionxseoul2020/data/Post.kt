@@ -15,5 +15,5 @@ data class Post(
     val uploadTime: String,
     val uploadLat: Double,
     val uploadLng: Double,
-    val comments: ArrayList<String>?
-)
+    var comments: ArrayList<String>?
+) : Serializable
