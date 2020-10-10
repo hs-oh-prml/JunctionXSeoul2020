@@ -45,7 +45,7 @@ class PopupReadActivity : FragmentActivity() {
         commentListView.layoutManager = LinearLayoutManager(applicationContext)
 
         post = intent.getSerializableExtra("post") as Post
-        storyTextView.text = post.story
+        storyTextView.text = URLDecoder.decode(post.story, "utf-8")
         uploadTime.text = post.uploadTime
         if (post.comments == null) {
             post.comments = ArrayList<String>()
@@ -79,8 +79,6 @@ class PopupReadActivity : FragmentActivity() {
                         break;
                     }
                 }
-
-
                 adapter.comments = arr
                 adapter.notifyDataSetChanged()
             }

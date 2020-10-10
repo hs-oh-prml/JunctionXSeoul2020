@@ -3,6 +3,7 @@ package com.example.junctionxseoul2020
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -15,6 +16,7 @@ import com.google.firebase.database.*
 import com.google.gson.Gson
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.*
+import com.naver.maps.map.overlay.CircleOverlay
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.Overlay
 import com.naver.maps.map.util.FusedLocationSource
@@ -165,7 +167,14 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         fusedLocationClient.lastLocation.addOnSuccessListener {
             lat = it.latitude
             lng = it.longitude
+
+            val overlay = CircleOverlay()
+            overlay.center = LatLng(lat, lng)
+            overlay.map = naverMap
+            overlay.radius = 1000.0
+            overlay.color = getColor(R.color.overlayColor)
         }
+
 
         val rdb = FirebaseDatabase.getInstance().getReference("post/")
         rdb.addValueEventListener(object : ValueEventListener{
