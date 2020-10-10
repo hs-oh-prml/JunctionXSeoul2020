@@ -21,8 +21,8 @@ import java.util.*
 class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
     lateinit var postManager: PostManager
-    var lat = 0.0
-    var lng = 0.0
+    var lat = 37.541601
+    var lng = 127.078838
     lateinit var locationSource: FusedLocationSource
     lateinit var naverMap: NaverMap
 
