@@ -42,6 +42,8 @@ class NavigationDrawerActivity : AppCompatActivity(), OnMapReadyCallback {
     lateinit var naverMap: NaverMap
     lateinit var fusedLocationClient: FusedLocationProviderClient
 
+    val overlay = CircleOverlay()
+    var markers = ArrayList<Marker>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,6 +73,31 @@ class NavigationDrawerActivity : AppCompatActivity(), OnMapReadyCallback {
 
         val loginIntent = Intent(this, LoginActivity::class.java)
         startActivityForResult(loginIntent, 1)
+
+        disBtn_50km.setOnClickListener {
+            Log.d("LOG_SWITCH_50km", markers.toString())
+            overlay.radius = 50000.0
+            val cameraUpdate = CameraUpdate.zoomTo(7.0).animate(CameraAnimation.Easing)
+            naverMap.moveCamera(cameraUpdate)
+            showMarker(locationSource.lastLocation!!.latitude, locationSource.lastLocation!!.longitude, 50000)    //50km
+        }
+
+        disBtn_5km.setOnClickListener {
+            Log.d("LOG_SWITCH_5km", markers.toString())
+            overlay.radius = 5000.0
+            val cameraUpdate = CameraUpdate.zoomTo(12.0).animate(CameraAnimation.Easing)
+            naverMap.moveCamera(cameraUpdate)
+            showMarker(locationSource.lastLocation!!.latitude, locationSource.lastLocation!!.longitude, 5000)    //5km
+        }
+
+        disBtn_1km.setOnClickListener {
+            Log.d("LOG_SWITCH_1km", markers.toString())
+            overlay.radius = 1000.0
+            val cameraUpdate = CameraUpdate.zoomTo(14.0).animate(CameraAnimation.Easing)
+            naverMap.moveCamera(cameraUpdate)
+            showMarker(locationSource.lastLocation!!.latitude, locationSource.lastLocation!!.longitude, 1000)    //5km
+        }
+
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -118,6 +145,7 @@ class NavigationDrawerActivity : AppCompatActivity(), OnMapReadyCallback {
                         true
                     }
                     temp.map = naverMap
+                    markers.add(temp)
                 }
             }
         } else if (requestCode == 992) {
@@ -150,19 +178,26 @@ class NavigationDrawerActivity : AppCompatActivity(), OnMapReadyCallback {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
-    fun showMarker() {
+    fun showMarker(clat:Double, clng:Double, dis: Int) {
         Log.d("LOG_POSTMANGER", postManager.posts.toString())
+        markers.clear()
         for (post in postManager.posts) {
-            val temp: Marker = Marker()
+            val temp = Marker()
             temp.position = LatLng(post.uploadLat, post.uploadLng)
-            temp.onClickListener = Overlay.OnClickListener {
-                Log.e("onClick", post.pid)
-                val intent: Intent = Intent(this, PopupReadActivity::class.java)
-                intent.putExtra("post", post)
-                startActivityForResult(intent, 992)
-                true
+            val distance = calcDistance(post.uploadLat, post.uploadLng, clat, clng)
+            if (distance > dis) {
+                temp.map = null
+            } else {
+                temp.onClickListener = Overlay.OnClickListener {
+                    Log.e("onClick", post.pid)
+                    val intent: Intent = Intent(this, PopupReadActivity::class.java)
+                    intent.putExtra("post", post)
+                    startActivityForResult(intent, 992)
+                    true
+                }
+                temp.map = naverMap
+                markers.add(temp)
             }
-            temp.map = naverMap
         }
     }
 
@@ -178,10 +213,9 @@ class NavigationDrawerActivity : AppCompatActivity(), OnMapReadyCallback {
             lat = it.latitude
             lng = it.longitude
 
-            val overlay = CircleOverlay()
             overlay.center = LatLng(lat, lng)
             overlay.map = naverMap
-            overlay.radius = 1000.0
+            overlay.radius = 1000.0         //1000m
             overlay.color = getColor(R.color.overlayColor)
         }
 
@@ -194,7 +228,7 @@ class NavigationDrawerActivity : AppCompatActivity(), OnMapReadyCallback {
 
                     val json = postSnapshot.value.toString()
                     postManager.posts.add(gson.fromJson(json, Post::class.java))
-                    showMarker()
+                    showMarker(locationSource.lastLocation!!.latitude, locationSource.lastLocation!!.longitude, 1000)
                 }
             }
             override fun onCancelled(error: DatabaseError) {
@@ -239,10 +273,23 @@ class NavigationDrawerActivity : AppCompatActivity(), OnMapReadyCallback {
                 startActivity(intent)
                 true
             }
-
             else -> super.onOptionsItemSelected(item)
         }
     }
+
+
+    fun calcDistance(lat1:Double, lng1:Double, lat2:Double, lng2:Double): Double {  // generally used geo measurement function
+        val R = 6378.137; // Radius of earth in KM
+        val dLat = lat2 * Math.PI / 180 - lat1 * Math.PI / 180;
+        val dLon = lng2 * Math.PI / 180 - lng1 * Math.PI / 180;
+        val a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                Math.sin(dLon/2) * Math.sin(dLon/2);
+        val c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        val d = R * c;
+        return d * 1000; // meters
+    }
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.navigation_drawer, menu)
