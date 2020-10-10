@@ -5,7 +5,6 @@ import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -17,22 +16,20 @@ import com.bumptech.glide.Glide
 import com.example.junctionxseoul2020.apiService.RetrofitService
 import com.example.junctionxseoul2020.data.Post
 import com.example.junctionxseoul2020.data.ZepetoRequest
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.storage.StorageReference
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_temp.*
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
-import org.json.JSONArray
-import org.json.JSONObject
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
+import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.net.URLEncoder
-import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -162,18 +159,32 @@ class PopupWriteActivity : FragmentActivity() {
         return builder.build()
     }
 
-    // screen capture: view -> image
-    fun captureView(){
-        var bitmap = Bitmap.createBitmap(zepetoImg.width, zepetoImg.height, Bitmap.Config.ARGB_8888)
-        var canvas = Canvas(bitmap)
-        image_view.draw(canvas)
-    }
-
-
     fun onCloseBtnClicked(view: View) {
         val intent: Intent = Intent()
         setResult(Activity.RESULT_OK, intent)
         finish()
+    }
+
+    // upload image on firebase storage
+    fun uploadImage(){
+        // Get the data from an ImageView as bytes
+
+        var bitmap = Bitmap.createBitmap(zepetoImg.width, zepetoImg.height, Bitmap.Config.ARGB_8888)
+        var canvas = Canvas(bitmap)
+        image_view.draw(canvas)
+
+        val baos = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+        val data = baos.toByteArray()
+
+        var uploadTask = mountainsRef.putBytes(data)
+        uploadTask.addOnFailureListener {
+            // Handle unsuccessful uploads
+        }.addOnSuccessListener { taskSnapshot ->
+            // taskSnapshot.metadata contains file metadata such as size, content-type, etc.
+            // ...
+        }
+
     }
 
     fun onSubmitPostBtnClicked(view: View) {
