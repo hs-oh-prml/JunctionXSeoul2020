@@ -8,7 +8,6 @@ import android.os.Handler
 import android.os.Message
 import android.util.Log
 import com.example.junctionxseoul2020.data.PostManager
-import com.example.junctionxseoul2020.data.UserManager
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -29,10 +28,8 @@ class LoginActivity : AppCompatActivity() {
     val handler: mHandler = mHandler()
 
     val postManager: PostManager = PostManager(mHandler())
-    val userManager: UserManager = UserManager(mHandler())
 
     var isThreadEnd = false
-    var isThreadEnd_user = false
     var isThreadEnd_post = false
 
 
@@ -47,11 +44,8 @@ class LoginActivity : AppCompatActivity() {
 
     fun endActivity() {
         myProgressBar.progressOFF()
-        val intent: Intent = Intent()
-        intent.putExtra("postManager", postManager)
-        intent.putExtra("userManager", userManager)
-        Log.d("LOG_POSTMANAGER", postManager.toString())
-        Log.d("LOG_USERMANAGER", userManager.toString())
+        val intent: Intent = Intent(this, MainActivity::class.java)
+        intent.putExtra("postManager", postManager.vec)
         setResult(Activity.RESULT_OK, intent)
         finish()
     }
@@ -68,11 +62,8 @@ class LoginActivity : AppCompatActivity() {
                 if (bundle.containsKey("isThreadEnd_post")) {
                     isThreadEnd_post = bundle.getBoolean("isThreadEnd_post")
                 }
-                if (bundle.containsKey("isThreadEnd_user")) {
-                    isThreadEnd_user = bundle.getBoolean("isThreadEnd_user")
-                }
 
-                if (isThreadEnd && isThreadEnd_post && isThreadEnd_user) {
+                if (isThreadEnd && isThreadEnd_post) {
                     endActivity()
                 }
             }
@@ -85,7 +76,6 @@ class LoginActivity : AppCompatActivity() {
             val bundle: Bundle = Bundle()
 
             postManager.readPost()
-            userManager.readUser()
 
             bundle.putBoolean("isThreadEnd", true)
             message.data = bundle
