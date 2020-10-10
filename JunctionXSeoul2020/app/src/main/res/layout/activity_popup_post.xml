@@ -6,7 +6,7 @@
     android:layout_gravity="center"
     android:background="@drawable/linearlayout_border_2"
     android:orientation="vertical"
-    tools:context=".PopupPostActivity">
+    tools:context=".PopupReadActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -55,14 +55,54 @@
         android:layout_width="330dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:layout_margin="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="10dp"
+        android:background="@drawable/linearlayout_border_1"
         android:ellipsize="end"
         android:gravity="center_vertical|left"
         android:lineSpacingExtra="5dp"
         android:maxLines="2"
+        android:onClick="onStoryTextViewClicked"
+        android:paddingBottom="10dp"
         android:text="오늘 아침엔 뭐먹지. 건불먹을까 아니다 건불 건너편에 뼈해장국집 엄청 맛나는데 거기로 갈까 너무 고민된다. 행복한 고민이 시작됐다."
         android:textColor="#000000"
-        android:onClick="onStoryTextViewClicked"
         android:textSize="15sp" />
+
+    <LinearLayout
+        android:layout_width="330dp"
+        android:layout_height="150dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="10dp"
+        android:orientation="vertical"
+        android:padding="5dp">
+
+        <TextView
+            android:id="@+id/textView4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:gravity="center_vertical"
+            android:text="Comments"
+            android:textColor="#000000"
+            android:textSize="17sp" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/commentListView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <TextView
+            android:id="@+id/noComment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:gravity="center_vertical"
+            android:text="No registered comments."
+            android:textSize="15sp"
+            android:textStyle="italic|bold"
+            android:visibility="gone" />
+    </LinearLayout>
 
 </LinearLayout>

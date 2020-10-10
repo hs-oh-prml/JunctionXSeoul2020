@@ -15,7 +15,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
         <activity
-            android:name=".PopupPostActivity"
+            android:name=".PopupWriteActivity"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+        <activity
+            android:name=".PopupReadActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
         <activity android:name=".LoginActivity" />
         <activity android:name=".TempActivity" />

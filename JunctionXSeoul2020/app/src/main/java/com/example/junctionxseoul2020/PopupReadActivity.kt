@@ -8,9 +8,18 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.TextView
 import androidx.fragment.app.FragmentActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.junctionxseoul2020.adapter.CommentListAdapater
 import kotlinx.android.synthetic.main.activity_popup_post.*
+import java.util.*
 
-class PopupPostActivity : FragmentActivity() {
+class PopupReadActivity : FragmentActivity() {
+
+    lateinit var comments: ArrayList<String>
+    lateinit var commentListView: RecyclerView
+    lateinit var adapter: CommentListAdapater
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -21,8 +30,27 @@ class PopupPostActivity : FragmentActivity() {
 
         setContentView(R.layout.activity_popup_post)
 
+        commentListView = findViewById(R.id.commentListView)
+        commentListView.layoutManager = LinearLayoutManager(applicationContext)
+
         storyTextView.text = intent.getStringExtra("story")!!
-        uploadTime.text = intent.getIntExtra("uploadTime", 0).toString() + "에 작성됨"
+        uploadTime.text = intent.getStringExtra("uploadTime") + " 작성"
+        comments = intent.getStringArrayListExtra("comments")
+
+        adapter = CommentListAdapater(comments)
+        commentListView.adapter = adapter
+
+        checkCommentNum()
+    }
+
+    fun checkCommentNum() {
+        if (comments.isEmpty()) {
+            commentListView.visibility = View.GONE
+            noComment.visibility = View.VISIBLE
+        } else {
+            commentListView.visibility = View.VISIBLE
+            noComment.visibility = View.GONE
+        }
     }
 
     fun onCloseBtnClicked(view: View) {

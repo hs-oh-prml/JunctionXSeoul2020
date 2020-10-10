@@ -5,7 +5,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.example.junctionxseoul2020.data.Post
@@ -72,6 +71,12 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             postManager = data?.getSerializableExtra("postManager") as PostManager
             userManager = data.getSerializableExtra("userManager") as UserManager
         }
+        /*
+        게시글 작성 액티비티가 종료된 경우
+        */
+        else if (requestCode == 11) {
+
+        }
     }
 
     override fun onRequestPermissionsResult(
@@ -101,6 +106,14 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         디버깅 용도로 임시로 만든 코드임
         */
         // 시작
+        val temp_vector: Vector<String> = Vector<String>()
+        temp_vector.add("1")
+        temp_vector.add("2")
+        temp_vector.add("3")
+        temp_vector.add("4")
+        temp_vector.add("5")
+        temp_vector.add("6")
+        temp_vector.add("7")
         postManager = PostManager()
         postManager.posts.add(
             Post(
@@ -108,10 +121,10 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 1,
                 "1",
                 "first post",
-                1,
+                "2020.10.10 12:13",
                 37.543264,
                 127.076049,
-                Vector<String>()
+                temp_vector
             )
         )
         postManager.posts.add(
@@ -120,7 +133,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 2,
                 "2",
                 "second post",
-                2,
+                "2020.10.10 12:13",
                 37.541953,
                 127.079621,
                 Vector<String>()
@@ -132,7 +145,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 3,
                 "3",
                 "third post",
-                3,
+                "2020.10.10 12:13",
                 37.542433,
                 127.078807,
                 Vector<String>()
@@ -144,7 +157,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 4,
                 "4",
                 "fourth post",
-                4,
+                "2020.10.10 12:13",
                 37.544261,
                 127.076116,
                 Vector<String>()
@@ -159,9 +172,10 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             temp.onClickListener = object : Overlay.OnClickListener {
                 override fun onClick(p0: Overlay): Boolean {
                     Log.e("onClick", post.pID)
-                    val intent: Intent = Intent(this@MainActivity, PopupPostActivity::class.java)
+                    val intent: Intent = Intent(this@MainActivity, PopupReadActivity::class.java)
                     intent.putExtra("story", post.story)
                     intent.putExtra("uploadTime", post.uploadTime)
+                    intent.putExtra("comments", post.comments)
                     startActivity(intent)
                     return true
                 }
@@ -173,7 +187,11 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     fun onWritePostBtnClicked(view: View) {
-
+        val intent: Intent = Intent(this, PopupWriteActivity::class.java)
+        intent.putExtra("latitude", lat)
+        intent.putExtra("longitude", lng)
+        // 유저 id값을 알아내서 intent에 넣고 액티비티를 띄워야 한다.
+        startActivityForResult(intent, 11)
     }
 
 }
