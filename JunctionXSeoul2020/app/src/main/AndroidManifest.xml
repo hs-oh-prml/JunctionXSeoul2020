@@ -14,10 +14,15 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
-        <activity android:name=".TempActivity"/>
+        <activity android:name=".TempActivity" />
+        <activity
+            android:name=".PopupCommentWriteActivity"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".PopupWriteActivity"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".PopupReadActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
