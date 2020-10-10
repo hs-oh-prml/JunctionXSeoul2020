@@ -211,6 +211,13 @@ class PopupWriteActivity : FragmentActivity() {
             postDB.child("/$pID").setValue(item)
             userDB = FirebaseDatabase.getInstance().getReference("user/$uID")
             userDB.child("/pID").setValue(pID)
+
+
+
+            val intent: Intent = Intent()
+            intent.putExtra("post",item)
+            setResult(Activity.RESULT_OK, intent)
+            finish()
         }
     }
 
@@ -229,14 +236,15 @@ class PopupWriteActivity : FragmentActivity() {
         총 5가지의 데이터를 DB에 저장해야 한다.
         */
         // DB에 저장하는 코드 시작
+
         val uID = App.prefs.getUserUID()!!
         postDB = FirebaseDatabase.getInstance().getReference("post")
         val pID = postDB.push().key!!
         uploadImage(pID, uID, story, formatted)
-        // DB에 저장하는 코드 종료
 
-        val intent: Intent = Intent()
-        setResult(Activity.RESULT_OK, intent)
-        finish()
+        //val post = Post(pID,url,uID,story,formatted,latitude,longitude,null)
+
+
+        // DB에 저장하는 코드 종료
     }
 }

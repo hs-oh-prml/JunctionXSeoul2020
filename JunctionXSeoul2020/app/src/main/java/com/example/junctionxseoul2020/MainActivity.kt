@@ -1,6 +1,7 @@
 package com.example.junctionxseoul2020
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -25,7 +26,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     var lng = 127.078838
     lateinit var locationSource: FusedLocationSource
     lateinit var naverMap: NaverMap
-
+    val markers: Vector<Marker> = Vector<Marker>()
     lateinit var fusedLocationClient: FusedLocationProviderClient
 
 
@@ -69,9 +70,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 }
             }
 
-
-
-
             val fm = supportFragmentManager
             val mapFragment = fm.findFragmentById(R.id.map) as MapFragment?
                 ?: MapFragment.newInstance().also {
@@ -84,7 +82,21 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         게시글 작성 액티비티가 종료된 경우
         */
         else if(requestCode == 11) {
-
+            if(data!=null){
+                val post = data.getSerializableExtra("post") as Post
+                val temp: Marker = Marker()
+                temp.position = LatLng(post.uploadLat, post.uploadLng)
+                temp.onClickListener = object : Overlay.OnClickListener {
+                    override fun onClick(p0: Overlay): Boolean {
+                        Log.e("onClick", post.pID)
+                        val intent: Intent = Intent(this@MainActivity, PopupReadActivity::class.java)
+                        intent.putExtra("post", post)
+                        startActivityForResult(intent,992)
+                        return true
+                    }
+                }
+                temp.map = naverMap
+            }
         }
         else if(requestCode == 992) {
             if(data!=null){
@@ -117,17 +129,12 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
-    override fun onMapReady(naverMap: NaverMap) {
-        this.naverMap = naverMap
-        naverMap.locationSource = locationSource
-        naverMap.locationTrackingMode = LocationTrackingMode.Follow
 
-        /*
-        디버깅 용도로 임시로 만든 코드임
-        */
-        // 시작
+    fun showMarker(){
+        for(marker in markers)
+            marker.map=null
 
-        val marker: Vector<Marker> = Vector<Marker>()
+        //markers.removeAllElements()
         for (post in postManager.posts) {
             val temp: Marker = Marker()
             temp.position = LatLng(post.uploadLat, post.uploadLng)
@@ -142,8 +149,31 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
             }
             temp.map = naverMap
-            marker.add(temp)
+            //markers.add(temp)
         }
+    }
+
+    @SuppressLint("MissingPermission")
+    override fun onMapReady(naverMap: NaverMap) {
+        this.naverMap = naverMap
+        naverMap.locationSource = locationSource
+        naverMap.locationTrackingMode = LocationTrackingMode.Follow
+
+
+        fusedLocationClient = FusedLocationProviderClient(this)
+        fusedLocationClient.lastLocation.addOnSuccessListener {
+            lat = it.latitude
+            lng = it.longitude
+        }
+
+        /*
+        디버깅 용도로 임시로 만든 코드임
+        */
+        // 시작
+
+        showMarker()
+
+
     }
 
     fun onWritePostBtnClicked(view: View) {
