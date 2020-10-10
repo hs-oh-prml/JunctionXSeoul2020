@@ -88,6 +88,7 @@ class PopupReadActivity : FragmentActivity() {
 
     fun onCloseBtnClicked(view: View) {
         val intent: Intent = Intent()
+        intent.putExtra("post", post)
         setResult(Activity.RESULT_OK, intent)
         finish()
     }

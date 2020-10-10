@@ -21,8 +21,8 @@ import java.util.*
 class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
     lateinit var postManager: PostManager
-    var lat = 0.0
-    var lng = 0.0
+    var lat = 37.541601
+    var lng = 127.078838
     lateinit var locationSource: FusedLocationSource
     lateinit var naverMap: NaverMap
 
@@ -32,14 +32,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        init()
-    }
-
-    private fun init() {
-        NaverMapSdk.getInstance(this).client = NaverMapSdk.NaverCloudPlatformClient("4fdqbc9gq2")
-        locationSource = FusedLocationSource(this, 0)
-
-
         ActivityCompat.requestPermissions(
             MainActivity@ this,
             arrayOf(
@@ -47,16 +39,16 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 Manifest.permission.ACCESS_COARSE_LOCATION
             ), 0
         )
-
         setContentView(R.layout.activity_main)
 
-        val fm = supportFragmentManager
-        val mapFragment = fm.findFragmentById(R.id.map) as MapFragment?
-            ?: MapFragment.newInstance().also {
-                fm.beginTransaction().add(R.id.map, it).commit()
-            }
+        init()
+    }
 
-        mapFragment.getMapAsync(this)
+    private fun init(){
+        postManager= PostManager()
+        NaverMapSdk.getInstance(this).client = NaverMapSdk.NaverCloudPlatformClient("4fdqbc9gq2")
+        locationSource = FusedLocationSource(this, 0)
+
 
         val loginIntent = Intent(this, LoginActivity::class.java)
         startActivityForResult(loginIntent, 1)
@@ -69,20 +61,42 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         로그인 액티비티가 종료된 경우
         */
         if (requestCode == 1) {
-            if (data != null) {
+            if(data!=null){
                 val vec = data.getStringArrayListExtra("postManager")
                 val gson = Gson()
                 for (i in vec) {
                     postManager.posts.add(gson.fromJson(i, Post::class.java))
                 }
             }
+
+
+
+
+            val fm = supportFragmentManager
+            val mapFragment = fm.findFragmentById(R.id.map) as MapFragment?
+                ?: MapFragment.newInstance().also {
+                    fm.beginTransaction().add(R.id.map, it).commit()
+                }
+
+            mapFragment.getMapAsync(this)
         }
         /*
         게시글 작성 액티비티가 종료된 경우
         */
-        else if (requestCode == 11) {
+        else if(requestCode == 11) {
 
         }
+        else if(requestCode == 992) {
+            if(data!=null){
+                val post = data.getSerializableExtra("post") as Post
+                for(i in postManager.posts){
+                    if(i.pID==post.pID)
+                        i.comments=post.comments
+
+                }
+            }
+        }
+
     }
 
     override fun onRequestPermissionsResult(
@@ -112,64 +126,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         디버깅 용도로 임시로 만든 코드임
         */
         // 시작
-        val temp_vector: ArrayList<String> = ArrayList()
-        temp_vector.add("1")
-        temp_vector.add("2")
-        temp_vector.add("3")
-        temp_vector.add("4")
-        temp_vector.add("5")
-        temp_vector.add("6")
-        temp_vector.add("7")
-        postManager = PostManager()
-        postManager.posts.add(
-            Post(
-                "1",
-                "1",
-                "1",
-                "first post",
-                "2020.10.10 12:13",
-                37.543264,
-                127.076049,
-                temp_vector
-            )
-        )
-        postManager.posts.add(
-            Post(
-                "2",
-                "2",
-                "2",
-                "second post",
-                "2020.10.10 12:13",
-                37.541953,
-                127.079621,
-                null
-            )
-        )
-        postManager.posts.add(
-            Post(
-                "3",
-                "3",
-                "3",
-                "third post",
-                "2020.10.10 12:13",
-                37.542433,
-                127.078807,
-                ArrayList<String>()
-            )
-        )
-        postManager.posts.add(
-            Post(
-                "4",
-                "4",
-                "4",
-                "fourth post",
-                "2020.10.10 12:13",
-                37.544261,
-                127.076116,
-                ArrayList<String>()
-            )
-        )
-        // 종료
 
         val marker: Vector<Marker> = Vector<Marker>()
         for (post in postManager.posts) {
@@ -180,11 +136,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                     Log.e("onClick", post.pID)
                     val intent: Intent = Intent(this@MainActivity, PopupReadActivity::class.java)
                     intent.putExtra("post", post)
-
-//                    intent.putExtra("story", post.story)
-//                    intent.putExtra("uploadTime", post.uploadTime)
-//                    intent.putExtra("comments", post.comments)
-                    startActivity(intent)
+                    startActivityForResult(intent,992)
                     return true
                 }
 
