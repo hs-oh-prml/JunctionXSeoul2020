@@ -169,6 +169,7 @@ class PopupWriteActivity : FragmentActivity() {
 
     fun onCloseBtnClicked(view: View) {
         val intent: Intent = Intent()
+        intent.putExtra("isAdded",false)
         setResult(Activity.RESULT_OK, intent)
         finish()
     }
@@ -216,6 +217,7 @@ class PopupWriteActivity : FragmentActivity() {
 
             val intent: Intent = Intent()
             intent.putExtra("post",item)
+            intent.putExtra("isAdded",true)
             setResult(Activity.RESULT_OK, intent)
             finish()
         }

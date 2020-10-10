@@ -83,19 +83,22 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         */
         else if(requestCode == 11) {
             if(data!=null){
-                val post = data.getSerializableExtra("post") as Post
-                val temp: Marker = Marker()
-                temp.position = LatLng(post.uploadLat, post.uploadLng)
-                temp.onClickListener = object : Overlay.OnClickListener {
-                    override fun onClick(p0: Overlay): Boolean {
-                        Log.e("onClick", post.pID)
-                        val intent: Intent = Intent(this@MainActivity, PopupReadActivity::class.java)
-                        intent.putExtra("post", post)
-                        startActivityForResult(intent,992)
-                        return true
+                if(data.getBooleanExtra("isAdded",false)) {
+                    val post = data.getSerializableExtra("post") as Post
+                    val temp: Marker = Marker()
+                    temp.position = LatLng(post.uploadLat, post.uploadLng)
+                    temp.onClickListener = object : Overlay.OnClickListener {
+                        override fun onClick(p0: Overlay): Boolean {
+                            Log.e("onClick", post.pID)
+                            val intent: Intent =
+                                Intent(this@MainActivity, PopupReadActivity::class.java)
+                            intent.putExtra("post", post)
+                            startActivityForResult(intent, 992)
+                            return true
+                        }
                     }
+                    temp.map = naverMap
                 }
-                temp.map = naverMap
             }
         }
         else if(requestCode == 992) {
