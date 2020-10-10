@@ -11,22 +11,23 @@ import androidx.core.app.ActivityCompat
 import com.example.junctionxseoul2020.data.Post
 import com.example.junctionxseoul2020.data.PostManager
 import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.firebase.database.*
 import com.google.gson.Gson
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.*
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.Overlay
 import com.naver.maps.map.util.FusedLocationSource
-import java.util.*
 
 class MainActivity : AppCompatActivity(), OnMapReadyCallback {
+
+    val gson = Gson()
 
     lateinit var postManager: PostManager
     var lat = 37.541601
     var lng = 127.078838
     lateinit var locationSource: FusedLocationSource
     lateinit var naverMap: NaverMap
-    val markers: Vector<Marker> = Vector<Marker>()
     lateinit var fusedLocationClient: FusedLocationProviderClient
 
 
@@ -64,9 +65,10 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         if (requestCode == 1) {
             if(data!=null){
                 val vec = data.getStringArrayListExtra("postManager")
-                val gson = Gson()
                 for (i in vec) {
-                    postManager.posts.add(gson.fromJson(i, Post::class.java))
+                    val post = gson.fromJson(i,Post::class.java)
+                    postManager.posts.add(post)
+                    //postManager.posts.add(gson.fromJson(i, Post::class.java))
                 }
             }
 
@@ -85,17 +87,15 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             if(data!=null){
                 if(data.getBooleanExtra("isAdded",false)) {
                     val post = data.getSerializableExtra("post") as Post
-                    val temp: Marker = Marker()
+                    Log.d("Log_POST", post.toString())
+                    val temp = Marker()
                     temp.position = LatLng(post.uploadLat, post.uploadLng)
-                    temp.onClickListener = object : Overlay.OnClickListener {
-                        override fun onClick(p0: Overlay): Boolean {
-                            Log.e("onClick", post.pID)
-                            val intent: Intent =
-                                Intent(this@MainActivity, PopupReadActivity::class.java)
-                            intent.putExtra("post", post)
-                            startActivityForResult(intent, 992)
-                            return true
-                        }
+                    temp.onClickListener = Overlay.OnClickListener {
+                        Log.e("onClick", post.pid)
+                        val intent = Intent(this@MainActivity, PopupReadActivity::class.java)
+                        intent.putExtra("post", post)
+                        startActivityForResult(intent, 992)
+                        true
                     }
                     temp.map = naverMap
                 }
@@ -105,7 +105,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             if(data!=null){
                 val post = data.getSerializableExtra("post") as Post
                 for(i in postManager.posts){
-                    if(i.pID==post.pID)
+                    if(i.pid==post.pid)
                         i.comments=post.comments
 
                 }
@@ -134,25 +134,18 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
 
     fun showMarker(){
-        for(marker in markers)
-            marker.map=null
-
-        //markers.removeAllElements()
+        Log.d("LOG_POSTMANGER", postManager.posts.toString())
         for (post in postManager.posts) {
             val temp: Marker = Marker()
             temp.position = LatLng(post.uploadLat, post.uploadLng)
-            temp.onClickListener = object : Overlay.OnClickListener {
-                override fun onClick(p0: Overlay): Boolean {
-                    Log.e("onClick", post.pID)
-                    val intent: Intent = Intent(this@MainActivity, PopupReadActivity::class.java)
-                    intent.putExtra("post", post)
-                    startActivityForResult(intent,992)
-                    return true
-                }
-
+            temp.onClickListener = Overlay.OnClickListener {
+                Log.e("onClick", post.pid)
+                val intent: Intent = Intent(this@MainActivity, PopupReadActivity::class.java)
+                intent.putExtra("post", post)
+                startActivityForResult(intent,992)
+                true
             }
             temp.map = naverMap
-            //markers.add(temp)
         }
     }
 
@@ -169,12 +162,24 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             lng = it.longitude
         }
 
-        /*
-        디버깅 용도로 임시로 만든 코드임
-        */
-        // 시작
+        val rdb = FirebaseDatabase.getInstance().getReference("post/")
+        rdb.addValueEventListener(object : ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                postManager.posts.clear()
+                for (postSnapshot in snapshot.children) {
+                    Log.d(TAG, "onChildAdded:" + postSnapshot.key!!)
 
-        showMarker()
+                    val json = postSnapshot.value.toString()
+                    postManager.posts.add(gson.fromJson(json, Post::class.java))
+                    showMarker()
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+//                TODO("Not yet implemented")
+            }
+
+        })
 
 
     }
@@ -187,4 +192,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         startActivityForResult(intent, 11)
     }
 
+    companion object {
+        private const val TAG = "TAG_REALTIME"
+    }
 }

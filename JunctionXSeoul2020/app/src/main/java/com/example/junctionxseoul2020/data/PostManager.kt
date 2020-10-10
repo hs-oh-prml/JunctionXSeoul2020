@@ -31,7 +31,7 @@ class PostManager() {
                 val jsonObj = JSONObject(p0.value.toString())
                 for( i in jsonObj.keys()){
                     val str = jsonObj[i].toString()
-                    vec.add(str.substring(0,1)+"\"pID\":$i,"+str.substring(1))
+                    vec.add(str.substring(0,1)+"\"pid\":\"$i\","+str.substring(1))
                 }
 
                 val message: Message = handler.obtainMessage()

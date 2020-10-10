@@ -7,8 +7,12 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.EditText
 import androidx.fragment.app.FragmentActivity
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 
 class PopupCommentWriteActivity : FragmentActivity() {
+
+    lateinit var commentDB: DatabaseReference
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

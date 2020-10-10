@@ -7,10 +7,10 @@ import java.util.*
     uploadTime -> YYYY.MM.DD HH:mm
 */
 
-data class Post(
-    val pID: String,
+class Post(
+    val pid: String,
     val img: String,
-    val uID: String,
+    val uid: String,
     val story: String,
     val uploadTime: String,
     val uploadLat: Double,

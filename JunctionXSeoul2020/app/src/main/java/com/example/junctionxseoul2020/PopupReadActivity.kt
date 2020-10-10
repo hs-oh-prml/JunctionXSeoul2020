@@ -13,10 +13,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.junctionxseoul2020.adapter.CommentListAdapater
 import com.example.junctionxseoul2020.data.Post
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.activity_popup_read.*
 import java.util.*
+import kotlin.collections.ArrayList
 
 class PopupReadActivity : FragmentActivity() {
 
@@ -25,6 +25,8 @@ class PopupReadActivity : FragmentActivity() {
     lateinit var post: Post
     lateinit var commentListView: RecyclerView
     lateinit var adapter: CommentListAdapater
+
+    lateinit var databaseReference: DatabaseReference
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,6 +57,29 @@ class PopupReadActivity : FragmentActivity() {
         commentListView.adapter = adapter
 
         checkCommentNum()
+
+        var arr=ArrayList<String>()
+        postDB = FirebaseDatabase.getInstance().getReference("post/${post.pid}")
+        postDB.addValueEventListener(object : ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                for (postSnapshot in snapshot.children) {
+                    if (postSnapshot.key == "comments") {
+
+                        for(i in postSnapshot.children)
+                            arr.add(i.value.toString())
+                        break;
+                    }
+                }
+
+
+                adapter.comments = arr
+                adapter.notifyDataSetChanged()
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+//                TODO("Not yet implemented")
+            }
+        })
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -64,17 +89,19 @@ class PopupReadActivity : FragmentActivity() {
         if (requestCode == 1010) {
             if (data != null) {
                 if (data.getBooleanExtra("inputOK", false)) {
+
                     val comment: String = data.getStringExtra("comment")
                     // 덧글을 새롭게 추가해야함
                     if (post.comments == null) {
                         post.comments = ArrayList<String>()
                     }
-                    post.comments!!.add(comment)
+                    adapter.comments.add(comment)
+                    //post.comments?.add(comment)
                     adapter.notifyDataSetChanged()
                     checkCommentNum()
                     // 덧글 DB에 반영해야하고, MainActivtity에 있는 PostManager 내부의 posts에도 반영시켜야 함
 
-                    postDB = FirebaseDatabase.getInstance().getReference("post/${post.pID}/comments")
+                    postDB = FirebaseDatabase.getInstance().getReference("post/${post.pid}/comments")
                     postDB.setValue(post.comments)
                 }
             }
@@ -94,6 +121,7 @@ class PopupReadActivity : FragmentActivity() {
 
     fun onCloseBtnClicked(view: View) {
         val intent: Intent = Intent()
+        
         intent.putExtra("post", post)
         setResult(Activity.RESULT_OK, intent)
         finish()
