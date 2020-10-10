@@ -26,8 +26,8 @@
         android:layout_weight="1"
         android:ems="12"
         android:inputType="textPersonName"
-        android:text="HashCode is here"
-        android:textColor="#C5C5C5" />
+        android:hint="HashCode is here"
+        android:textColorHint="#C5C5C5" />
 
     <Space
         android:layout_width="match_parent"
