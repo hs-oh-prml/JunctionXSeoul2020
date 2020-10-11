@@ -27,29 +27,47 @@
 
             <Button
                 android:id="@+id/disBtn_50km"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
                 android:layout_gravity="right"
-                android:layout_marginRight="10dp"
+                android:layout_marginRight="5dp"
                 android:layout_marginTop="100dp"
-                android:text="50km"/>
+                android:text="50km"
+                android:textSize="12dp"
+                android:gravity="center"
+
+                android:background="@drawable/button_border_2"
+                android:textColor="#FFFFFF"
+                />
             <Button
                 android:id="@+id/disBtn_5km"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:gravity="center"
                 android:layout_gravity="right"
-                android:layout_marginRight="10dp"
-                android:layout_marginTop="170dp"
-                android:text="5km"/>
+                android:layout_marginRight="5dp"
+                android:layout_marginTop="160dp"
+                android:text="5km"
+                android:textSize="12dp"
 
+                android:background="@drawable/button_border_2"
+                android:textColor="#FFFFFF"
+                />
             <Button
                 android:id="@+id/disBtn_1km"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
                 android:layout_gravity="right"
-                android:layout_marginRight="10dp"
-                android:layout_marginTop="240dp"
-                android:text="1km"/>
+                android:layout_marginRight="5dp"
+                android:layout_marginTop="220dp"
+                android:text="1km"
+                android:textSize="12dp"
+                android:gravity="center"
+
+                android:background="@drawable/button_border_2"
+                android:textColor="#FFFFFF"
+
+                />
 
 
             <Button

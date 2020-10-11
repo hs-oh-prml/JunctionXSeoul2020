@@ -23,7 +23,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="@dimen/nav_header_vertical_spacing"
-        android:text="@string/nav_header_title"
+        android:text = "Hello Zepetalk! This page will be available someday."
         android:id="@+id/user_hashcode"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 

@@ -33,6 +33,7 @@ import com.naver.maps.geometry.LatLngBounds
 import com.naver.maps.map.*
 import com.naver.maps.map.overlay.*
 import com.naver.maps.map.util.FusedLocationSource
+import com.naver.maps.map.util.MarkerIcons
 import kotlinx.android.synthetic.main.activity_navigation_drawer.*
 import java.io.InputStream
 import java.net.URL
@@ -237,6 +238,8 @@ class NavigationDrawerActivity : AppCompatActivity(), OnMapReadyCallback {
                         true
                     }
                     temp.map = naverMap
+//                    temp.captionColor = Color.parseColor("#808ade")
+                    temp.icon = MarkerIcons.BLACK
                     markers.add(temp)
                 }
             }
@@ -255,7 +258,7 @@ class NavigationDrawerActivity : AppCompatActivity(), OnMapReadyCallback {
                 val borderSize =10
                 val bitmapWithBorder = Bitmap.createBitmap(bitmap.width + borderSize * 2, bitmap.height + borderSize * 2, bitmap.config)
                 val canvas = Canvas(bitmapWithBorder)
-                canvas.drawColor(Color.argb(255,0,218,118))
+                canvas.drawColor(Color.argb(255,124,151,194))
                 canvas.drawBitmap(bitmap, borderSize.toFloat(), borderSize.toFloat(), null)
                 icons.add(bitmapWithBorder)
             }
