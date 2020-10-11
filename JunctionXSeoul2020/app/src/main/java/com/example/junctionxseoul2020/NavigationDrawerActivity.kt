@@ -40,6 +40,7 @@ import java.net.URLDecoder
 
 class NavigationDrawerActivity : AppCompatActivity(), OnMapReadyCallback {
 
+    val myProgressBar: MyProgressBar = MyProgressBar()
     val gson = Gson()
     var clat:Double = 0.0
     var clng:Double = 0.0
@@ -212,6 +213,9 @@ class NavigationDrawerActivity : AppCompatActivity(), OnMapReadyCallback {
         val icons = ArrayList<Bitmap>()
 
         override fun onPreExecute() {
+
+
+            myProgressBar.progressON(this@NavigationDrawerActivity,null)
             Log.d("LOGD","async")
             super.onPreExecute()
             for(marker in markers){
@@ -262,6 +266,11 @@ class NavigationDrawerActivity : AppCompatActivity(), OnMapReadyCallback {
             return "확인"
         }
 
+        override fun onProgressUpdate(vararg values: Void?) {
+            super.onProgressUpdate(*values)
+
+        }
+
         override fun onPostExecute(result: String?) {
 
             super.onPostExecute(result)
@@ -272,8 +281,9 @@ class NavigationDrawerActivity : AppCompatActivity(), OnMapReadyCallback {
                 groundOverlay.setImage(OverlayImage.fromBitmap(icons[i]))
                 groundOverlay.map=naverMap
                 //markers[i].icon = OverlayImage.fromBitmap(icons[i])
-
             }
+
+            myProgressBar.progressOFF()
         }
     }
 

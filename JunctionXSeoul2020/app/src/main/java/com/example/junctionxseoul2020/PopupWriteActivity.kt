@@ -12,10 +12,7 @@ import android.hardware.camera2.params.StreamConfigurationMap
 import android.media.Image
 import android.media.ImageReader
 import android.net.Uri
-import android.os.Build
-import android.os.Bundle
-import android.os.HandlerThread
-import android.os.Handler
+import android.os.*
 import android.util.Log
 import android.util.Size
 import android.view.Surface
@@ -24,6 +21,7 @@ import android.view.WindowManager
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
@@ -54,6 +52,7 @@ import kotlin.collections.ArrayList
 
 class PopupWriteActivity : FragmentActivity() {
 
+    val myProgressBar: MyProgressBar = MyProgressBar()
     lateinit var postDB: DatabaseReference
     lateinit var userDB: DatabaseReference
 
@@ -142,6 +141,7 @@ class PopupWriteActivity : FragmentActivity() {
         // zepetoImg 이미지뷰에 이미지 업로드 종료
 
     }
+
     fun init(){
 
         cameraOnBtn.setOnClickListener {
@@ -228,10 +228,8 @@ class PopupWriteActivity : FragmentActivity() {
 
             cameraDevice!!.createCaptureSession(surfaces, object: CameraCaptureSession.StateCallback(){
                 override fun onConfigureFailed(p0: CameraCaptureSession) {
-//                    TODO("Not yet implemented")
                 }
                 override fun onConfigured(p0: CameraCaptureSession) {
-//                    TODO("Not yet implemented")
                     if(cameraDevice == null){
                         return
                     }
@@ -351,7 +349,7 @@ class PopupWriteActivity : FragmentActivity() {
     @SuppressLint("CheckResult")
     fun ZepetoAPI() {
 //        photoBoothList.shuffle()
-
+        myProgressBar.progressON(this@PopupWriteActivity,null)
         var photobooth_id = photoBoothList.random()
         var body = ZepetoRequest(
             "booth",
@@ -377,11 +375,15 @@ class PopupWriteActivity : FragmentActivity() {
                 Log.d("Response", it.toString())
                 var url = it.url
                 runOnUiThread {
+
                     Glide.with(applicationContext).load(url).into(zepetoImg)
+                    myProgressBar.progressOFF()
                 }
             }, {
                 Log.v("Fail", "")
             })
+
+
     }
 
     fun createOkHttpClient(): OkHttpClient {        // monitoring HTTP log
@@ -461,30 +463,34 @@ class PopupWriteActivity : FragmentActivity() {
     }
 
     fun onSubmitPostBtnClicked(view: View) {
-        val current = LocalDateTime.now()
-        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm")
-        val formatted = current.format(formatter)
-        Log.e("now time", formatted)
+        if(editText1.text.length==0)
+            Toast.makeText(this,"스토리를 입력하세요",Toast.LENGTH_SHORT).show()
+        else {
+            val current = LocalDateTime.now()
+            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm")
+            val formatted = current.format(formatter)
+            Log.e("now time", formatted)
 
-        var story: String = editText.text.toString().trim()
-        story = URLEncoder.encode(story, "utf-8")
+            var story: String = editText.text.toString().trim()
+            story = URLEncoder.encode(story, "utf-8")
 
-        /*
+            /*
         zepetoImg 이미지뷰에 업로드 되어있는 이미지를 가져오고,
         formatted : 업로드시간, story : 이야기, 제페토 이미지, 업로드 할 때의 latitude, longitude
         총 5가지의 데이터를 DB에 저장해야 한다.
         */
-        // DB에 저장하는 코드 시작
+            // DB에 저장하는 코드 시작
 
-        val uID = App.prefs.getUserUID()!!
-        postDB = FirebaseDatabase.getInstance().getReference("post")
-        val pID = postDB.push().key!!
-        uploadImage(pID, uID, story, formatted)
+            val uID = App.prefs.getUserUID()!!
+            postDB = FirebaseDatabase.getInstance().getReference("post")
+            val pID = postDB.push().key!!
+            uploadImage(pID, uID, story, formatted)
 
-        //val post = Post(pID,url,uID,story,formatted,latitude,longitude,null)
+            //val post = Post(pID,url,uID,story,formatted,latitude,longitude,null)
 
 
-        // DB에 저장하는 코드 종료
+            // DB에 저장하는 코드 종료
+        }
     }
 
     fun onCameraOnBtnClicked(view: View) {
