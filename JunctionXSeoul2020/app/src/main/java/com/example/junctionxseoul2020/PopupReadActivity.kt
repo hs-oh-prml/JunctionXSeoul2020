@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.text.TextUtils
+import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import android.widget.TextView
@@ -64,20 +65,21 @@ class PopupReadActivity : FragmentActivity() {
 
 
 
-        var arr=ArrayList<String>()
+        var arr= ArrayList<String>()
         postDB = FirebaseDatabase.getInstance().getReference("post/${post.pid}")
-        postDB.addValueEventListener(object : ValueEventListener{
+        postDB.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
+                arr = ArrayList()
                 for (postSnapshot in snapshot.children) {
                     if (postSnapshot.key == "comments") {
-
+                        Log.d("Snapshot",postSnapshot.value.toString())
                         for(i in postSnapshot.children)
                             arr.add(i.value.toString())
                         break;
                     }
                 }
-                adapter.comments = arr
-                adapter.notifyDataSetChanged()
+                adapter = CommentListAdapater(arr)
+                commentListView.adapter = adapter
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -99,14 +101,16 @@ class PopupReadActivity : FragmentActivity() {
                     if (post.comments == null) {
                         post.comments = ArrayList<String>()
                     }
-                    adapter.comments.add(comment)
-                    //post.comments?.add(comment)
-                    adapter.notifyDataSetChanged()
+                    post.comments?.add(comment)
+                    adapter = CommentListAdapater(post.comments!!)
+                    commentListView.adapter = adapter
+
                     checkCommentNum()
                     // 덧글 DB에 반영해야하고, MainActivtity에 있는 PostManager 내부의 posts에도 반영시켜야 함
 
                     postDB = FirebaseDatabase.getInstance().getReference("post/${post.pid}/comments")
                     postDB.setValue(post.comments)
+
                 }
             }
         }
