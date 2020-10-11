@@ -96,8 +96,11 @@ class NavigationDrawerActivity : AppCompatActivity(), OnMapReadyCallback {
             clat = locationSource.lastLocation!!.latitude
             clng = locationSource.lastLocation!!.longitude
             dis = 50000
-            val asyncTask=AsyncTaskClass()
-            asyncTask.execute()
+
+//
+//            val asyncTask=AsyncTaskClass()
+//            asyncTask.execute()
+            showMarker()
         }
 
         disBtn_5km.setOnClickListener {
@@ -109,8 +112,12 @@ class NavigationDrawerActivity : AppCompatActivity(), OnMapReadyCallback {
             clat = locationSource.lastLocation!!.latitude
             clng = locationSource.lastLocation!!.longitude
             dis = 5000
-            val asyncTask=AsyncTaskClass()
-            asyncTask.execute()
+
+
+//            val asyncTask=AsyncTaskClass()
+//            asyncTask.execute()
+
+            showMarker()
         }
 
         disBtn_1km.setOnClickListener {
@@ -122,8 +129,10 @@ class NavigationDrawerActivity : AppCompatActivity(), OnMapReadyCallback {
             clat = locationSource.lastLocation!!.latitude
             clng = locationSource.lastLocation!!.longitude
             dis = 1000
-            val asyncTask=AsyncTaskClass()
-            asyncTask.execute()
+//            val asyncTask=AsyncTaskClass()
+//            asyncTask.execute()
+
+            showMarker()
         }
 
     }
@@ -205,7 +214,7 @@ class NavigationDrawerActivity : AppCompatActivity(), OnMapReadyCallback {
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
-
+        /*
     inner class AsyncTaskClass: AsyncTask<Void, Void, String>(){
 
 
@@ -279,8 +288,7 @@ class NavigationDrawerActivity : AppCompatActivity(), OnMapReadyCallback {
             super.onPostExecute(result)
             for(i in markers.indices){
                 val groundOverlay = GroundOverlay()
-                groundOverlay.bounds = LatLngBounds(
-                    LatLng(posts[i].uploadLat, posts[i].uploadLng), LatLng(posts[i].uploadLat+0.0035, posts[i].uploadLng+0.004))
+                groundOverlay.bounds = LatLngBounds(LatLng(posts[i].uploadLat, posts[i].uploadLng), LatLng(posts[i].uploadLat+0.0035, posts[i].uploadLng+0.004))
                 groundOverlay.setImage(OverlayImage.fromBitmap(icons[i]))
                 groundOverlay.map=naverMap
                 //markers[i].icon = OverlayImage.fromBitmap(icons[i])
@@ -291,30 +299,30 @@ class NavigationDrawerActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
 
-
+*/
 //
-//    fun showMarker(clat:Double, clng:Double, dis: Int) {
-//        Log.d("LOG_POSTMANGER", postManager.posts.toString())
-//        markers.clear()
-//        for (post in postManager.posts) {
-//            val temp = Marker()
-//            temp.position = LatLng(post.uploadLat, post.uploadLng)
-//            val distance = calcDistance(post.uploadLat, post.uploadLng, clat, clng)
-//            if (distance > dis) {
-//                temp.map = null
-//            } else {
-//                temp.onClickListener = Overlay.OnClickListener {
-//                    Log.e("onClick", post.pid)
-//                    val intent: Intent = Intent(this, PopupReadActivity::class.java)
-//                    intent.putExtra("post", post)
-//                    startActivityForResult(intent, 992)
-//                    true
-//                }
-//                temp.map = naverMap
-//                markers.add(temp)
-//            }
-//        }
-//    }
+    fun showMarker() {
+        Log.d("LOG_POSTMANGER", postManager.posts.toString())
+        markers.clear()
+        for (post in postManager.posts) {
+            val temp = Marker()
+            temp.position = LatLng(post.uploadLat, post.uploadLng)
+            val distance = calcDistance(post.uploadLat, post.uploadLng, clat, clng)
+            if (distance > dis) {
+                temp.map = null
+            } else {
+                temp.onClickListener = Overlay.OnClickListener {
+                    Log.e("onClick", post.pid)
+                    val intent: Intent = Intent(this, PopupReadActivity::class.java)
+                    intent.putExtra("post", post)
+                    startActivityForResult(intent, 992)
+                    true
+                }
+                temp.map = naverMap
+                markers.add(temp)
+            }
+        }
+    }
 
     @SuppressLint("MissingPermission")
     override fun onMapReady(naverMap: NaverMap) {
@@ -351,8 +359,9 @@ class NavigationDrawerActivity : AppCompatActivity(), OnMapReadyCallback {
 
                 clat = locationSource.lastLocation!!.latitude
                 clng = locationSource.lastLocation!!.longitude
-                val asyncTask=AsyncTaskClass()
-                asyncTask.execute()
+//                val asyncTask=AsyncTaskClass()
+//                asyncTask.execute()
+                showMarker()
             }
             override fun onCancelled(error: DatabaseError) {
 //                TODO("Not yet implemented")
