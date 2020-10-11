@@ -11,12 +11,12 @@ class Post(
     val pid: String,
     val img: String,
     val uid: String,
-    val story: String,
+    var story: String?,
     val uploadTime: String,
     val uploadLat: Double,
     val uploadLng: Double,
     var comments: ArrayList<String>?
 ) : Serializable
 {
-    constructor(): this("pid", "img", "uid", "story", "time", 37.541601, 127.078838, null){}
+    constructor(): this("pid", "img", "uid", null, "time", 37.541601, 127.078838, null){}
 }
