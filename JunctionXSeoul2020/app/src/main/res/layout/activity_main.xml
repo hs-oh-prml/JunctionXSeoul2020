@@ -36,7 +36,8 @@
             android:paddingRight="10dp"
             android:text="Write post!"
             android:textColor="#FFFFFF"
-            android:textSize="15sp" />
+            android:textSize="15sp"
+            android:textStyle="bold" />
 
     </FrameLayout>
 

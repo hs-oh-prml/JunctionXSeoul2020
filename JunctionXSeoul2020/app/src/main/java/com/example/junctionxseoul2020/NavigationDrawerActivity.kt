@@ -242,8 +242,8 @@ class NavigationDrawerActivity : AppCompatActivity(), OnMapReadyCallback {
                         true
                     }
                     temp.map = naverMap
-//                    temp.captionColor = Color.parseColor("#808ade")
-                    temp.icon = MarkerIcons.BLACK
+//                  temp.captionColor = Color.parseColor("#808ade")
+                    temp.icon = MarkerIcons.LIGHTBLUE
                     markers.add(temp)
                 }
             }
@@ -332,6 +332,7 @@ class NavigationDrawerActivity : AppCompatActivity(), OnMapReadyCallback {
             overlay.map = naverMap
             overlay.radius = 1000.0         //1000m
             overlay.color = getColor(R.color.overlayColor)
+            overlay.globalZIndex=-400000
         }
 
         val rdb = FirebaseDatabase.getInstance().getReference("post/")
